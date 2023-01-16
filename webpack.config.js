@@ -1,4 +1,4 @@
-const path = require('path')
+const path = require('node:path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
@@ -7,7 +7,7 @@ module.exports = {
     entry: path.resolve(__dirname, 'src/index.js'),
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'bundle.js',
+        filename: 'index.js',
         clean: true,
         assetModuleFilename: '[name][ext]'
     },

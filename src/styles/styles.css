@@ -1,3 +1,107 @@
-h1 {
-  color: red;
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+
+html {
+  --primary-color: #22d3ee;
+  --grey: #94a3b8;
+  --background: #f1f5f9;
+  --light-background: #f8fafc;
+  --box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05), 0 3px 3px rgba(0, 0, 0, 0.05);
+  font-size: 16px; /* Root font-size for relative references */
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  font-family: "Roboto", sans-serif;
+  background-color: var(--light-background);
+  justify-content: flex-start;
+  height: 100vh;
+  width: 100%;
+  margin: 0;
+}
+
+h3 {
+  color: var(--grey);
+  font-size: 1rem;
+}
+
+#menubar {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background);
+  margin: 0px;
+  box-shadow: var(--box-shadow);
+}
+
+#profileMenu {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 0.75rem 0 0;
+  margin: 0 0 0 0;
+  border: 0 0 0 0;
+}
+
+#logoMenuBar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logoSubheader {
+  /* border: 1px solid red; */
+  font-size: 0.8rem;
+  padding: 0 0 2rem 0;
+  margin: 0 0 0 0;
+  border: 0 0 0 0;
+  width: 100%;
+  margin: 0.25rem 0.25rem 0 0;
+  text-align: center;
+}
+
+#gogodoLogo {
+  /* border: 1px solid black; */
+  max-height: 3.2rem;
+  width: 100%;
+  padding: 0 0 0 0;
+  border: 0 0 0 0;
+}
+
+.neutral {
+  color: var(--light-background);
+}
+
+#profileImage {
+  max-height: 2rem;
+}
+
+#settingsIcon {
+  max-height: 1.5rem;
+}
+
+.profileItems {
+  padding: 0.5rem 0.5rem 0 0;
+  margin: 0 0 0 0;
+  border: 0 0 0 0;
+}
+
+#btnBar {
+  display: flex;
+  justify-content: space-around;
+  margin: 0.5rem 0 1.25rem 0;
+}
+
+.btn {
+  background-color: var(--primary-color);
+  color: var(--light-background);
+  border: 0;
+  border-radius: 0.6rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.1);
+  padding: 0.6rem 1.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.btn:active {
+  transform: scale(0.98);
 }

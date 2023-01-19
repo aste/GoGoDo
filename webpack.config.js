@@ -1,6 +1,5 @@
 const path = require('node:path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 module.exports = {
     mode: 'development',
@@ -9,12 +8,12 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         filename: 'index.js',
         clean: true,
-        assetModuleFilename: '[name][ext]'
+        assetModuleFilename: '[name][ext]',
     },
     module: {
         rules: [
             {
-                test: /\.css$/,
+                test: /\.css$/i,
                 use: ['style-loader', 'css-loader', 'sass-loader'],
             },
             {
@@ -28,8 +27,8 @@ module.exports = {
             title: 'Webpack App',
             filename: 'index.html',
             template: 'src/template.html',
+            inject: false,
         }),
-        new BundleAnalyzerPlugin(),
     ],
 
 }

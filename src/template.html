@@ -5,12 +5,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title></title>
-    <!-- <link rel="stylesheet" href="./styles/styles.css" /> -->
     <script src="./index.js" defer></script>
   </head>
   <body>
     <div>
-      <h1>GoGoDo a ToDoList App Built with Webpack and Dynamically Created Objects 1</h1>
+      <div class="bar" id="menubar">
+        <div class="profile" id="profileMenu">
+          <h3 class="profile-text profileItems" id="profileText">username</h3>
+          <img class="profileItems" src="./anonProfileIconGrey.svg" id="profileImage" />
+          <img class="profileItems" src="./settingsGrey.svg" id="settingsIcon" />
+        </div>
+
+        <div class="bar" id="logoMenuBar">
+          <img src="./gogodoLogoCyan.svg" id="gogodoLogo" />
+          <h3 class="logoSubheader">
+            <span class="logoSubheader neutral">..</span>
+            To-Do, or more To-Do? That is the question
+          </h3>
+        </div>
+
+        <!-- <div class="bar" id="btnBar">
+          <button class="btn" id="mapBtn">Map</button>
+          <button class="btn" id="listBtn">List</button>
+        </div> -->
+      </div>
     </div>
   </body>
 </html>

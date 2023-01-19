@@ -30,7 +30,6 @@ h3 {
   flex-direction: column;
   background-color: var(--background);
   margin: 0px;
-  box-shadow: var(--box-shadow);
 }
 
 #profileMenu {
@@ -60,7 +59,6 @@ h3 {
 }
 
 #gogodoLogo {
-  /* border: 1px solid black; */
   max-height: 3.2rem;
   width: 100%;
   padding: 0 0 0 0;
@@ -76,7 +74,7 @@ h3 {
 }
 
 #settingsIcon {
-  max-height: 1.5rem;
+  max-height: 1.25rem;
 }
 
 .profileItems {
@@ -85,7 +83,40 @@ h3 {
   border: 0 0 0 0;
 }
 
-#btnBar {
+#mapListArea {
+  display: flex;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+#listPage {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  max-width: 50rem;
+  min-width: 30rem;
+  margin: 1rem;
+  border-radius: 0.5rem;
+  flex-grow: 1;
+}
+
+#todoItem {
+  display: flex;
+  /* background-color: var(--background); */
+  background-color: white;
+  margin: 0.5rem 0.5rem 0 0.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--background);
+}
+
+#todoItem,
+#menubar,
+#listPage {
+  box-shadow: var(--box-shadow);
+}
+
+/* #btnBar {
   display: flex;
   justify-content: space-around;
   margin: 0.5rem 0 1.25rem 0;
@@ -104,4 +135,4 @@ h3 {
 
 .btn:active {
   transform: scale(0.98);
-}
+} */

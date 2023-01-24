@@ -2,32 +2,42 @@
 
 html {
   --primary-color: #22d3ee;
+  --dark-grey: #64748b;
   --grey: #94a3b8;
+  --light-grey: #cbd5e1;
   --background: #f1f5f9;
   --light-background: #f8fafc;
-  --box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05), 0 3px 3px rgba(0, 0, 0, 0.05);
-  font-size: 16px; /* Root font-size for relative references */
+  --node-margin: 0.25rem;
+  --box-shadow: 0 3px 3px rgba(0, 0, 0, 0.05), 0 1px 1px rgba(0, 0, 0, 0.05);
+  --menubar-height: 8rem;
+  font-family: "Roboto", sans-serif;
+  height: 100%;
+  width: 100%;
 }
 
 body {
   display: flex;
   flex-direction: column;
-  font-family: "Roboto", sans-serif;
-  background-color: var(--light-background);
   justify-content: flex-start;
-  height: 100vh;
+  background-color: var(--light-background);
+  padding: 0;
+  height: 100%;
   width: 100%;
-  margin: 0;
 }
 
-h3 {
-  color: var(--grey);
-  font-size: 1rem;
+body,
+#gogodoLogo,
+#profileMenu,
+.profileItems,
+.nodeBtn {
+  margin: 0;
+  border: 0;
 }
 
 #menubar {
   display: flex;
   flex-direction: column;
+  height: var(--menubar-height);
   background-color: var(--background);
   margin: 0px;
 }
@@ -37,36 +47,28 @@ h3 {
   justify-content: flex-end;
   align-items: center;
   padding: 0 0.75rem 0 0;
-  margin: 0 0 0 0;
-  border: 0 0 0 0;
 }
 
-#logoMenuBar {
+h3 {
+  color: var(--grey);
+  font-size: 0.85rem;
+}
+
+#logoBar {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.logoSubheader {
-  /* border: 1px solid red; */
-  font-size: 0.8rem;
-  padding: 0 0 2rem 0;
-  margin: 0 0 0 0;
-  border: 0 0 0 0;
-  width: 100%;
-  margin: 0.25rem 0.25rem 0 0;
-  text-align: center;
-}
-
 #gogodoLogo {
   max-height: 3.2rem;
   width: 100%;
-  padding: 0 0 0 0;
-  border: 0 0 0 0;
+  padding: 0;
 }
 
-.neutral {
-  color: var(--light-background);
+.logoSubheader {
+  margin: 0 0 2rem 1rem;
+  text-align: center;
 }
 
 #profileImage {
@@ -78,61 +80,83 @@ h3 {
 }
 
 .profileItems {
-  padding: 0.5rem 0.5rem 0 0;
-  margin: 0 0 0 0;
-  border: 0 0 0 0;
+  margin: 0.5rem 0 0 0.5rem;
 }
+
+/* Styling for the list and map area */
 
 #mapListArea {
   display: flex;
+  flex-direction: row;
+  flex: 1;
   justify-content: center;
-  flex-grow: 1;
+  background: #22d3ee;
+  gap: 1rem;
+  padding: 1rem;
 }
 
-#listPage {
+#mainList {
   display: flex;
   flex-direction: column;
+  flex: 1;
   background-color: white;
   max-width: 50rem;
   min-width: 30rem;
-  margin: 1rem;
   border-radius: 0.5rem;
-  flex-grow: 1;
 }
 
-#todoItem {
+.wrapper {
   display: flex;
-  /* background-color: var(--background); */
+  flex-direction: row;
+  margin: var(--node-margin) 0 var(--node-margin) 0;
+  height: 2.5rem;
+  color: var(--grey);
+  justify-content: space-between;
+  border: solid 1px var(--light-background);
   background-color: white;
-  margin: 0.5rem 0.5rem 0 0.5rem;
   height: 2.5rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--background);
+  margin: 0.25rem;
 }
 
-#todoItem,
+.nodeBtn {
+  font-size: 0.6rem;
+  color: var(--grey);
+  text-align: center;
+  padding: 0.15rem;
+  box-sizing: border-box;
+  height: 1.2rem;
+  min-width: 1.2rem;
+  max-width: max-content;
+  background-color: #f1f5f9;
+  border: #cbd5e1 0.05rem solid;
+  border-radius: 0.6rem;
+  margin-left: var(--node-margin);
+}
+
+.nodeTextArea {
+  margin: var(--node-margin);
+  flex-grow: 1;
+}
+.nodeMenu {
+  display: flex;
+  flex-direction: column;
+  width: 9rem;
+}
+.nodePinMenu {
+  display: flex;
+  justify-content: right;
+  margin: var(--node-margin);
+}
+
+.nodeDescription {
+  font-size: 0.8rem;
+  color: var(--light-grey);
+}
+
+.nodeBtn,
+.wrapper,
 #menubar,
-#listPage {
+#mainList {
   box-shadow: var(--box-shadow);
 }
-
-/* #btnBar {
-  display: flex;
-  justify-content: space-around;
-  margin: 0.5rem 0 1.25rem 0;
-}
-
-.btn {
-  background-color: var(--primary-color);
-  color: var(--light-background);
-  border: 0;
-  border-radius: 0.6rem;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.1);
-  padding: 0.6rem 1.5rem;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.btn:active {
-  transform: scale(0.98);
-} */

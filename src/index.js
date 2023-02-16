@@ -9,31 +9,39 @@ const dateFns = require('date-fns')
 
 let task = createTask("Task name");
 let taskList = document.getElementById("mainTaskList");
+let forms = document.querySelectorAll(".nodeForm");
 let taskItem = document.createElement("div");
 
 
-function createTask(title) {
+// Factory Function for the To-Do Node Objects
+function createTask(nodeTitle) {
     return {
         uuid: uuid(),
+        collapseNode: false,
+        nodeTitle: nodeTitle,
+        dueDate: dateFns.addDays(dateFns.addHours(dateFns.startOfDay(new Date()), 18), 7),
+        priorityLevel: "H",
+        projectManager: "You",
         parent: undefined,
         child: undefined,
-        collapseNode: false,
-        title: title,
-        startDate: dateFns.addHours(dateFns.startOfDay(new Date()), 8),
-        dueDate: dateFns.addDays(dateFns.addHours(dateFns.startOfDay(new Date()), 18), 7),
-        priorityLevel: 1, // 1 to 3
-        progress: 0, // 0 to 100
-        // infoBtnActive: false,
-        // Info windows
-        // scope: undefined, // estimated hours or work (NA)
-        // archive: false,
-        // delete: false,
-        // complete: false,
     }
 }
 
-console.log(createTask())
-console.log(createTask('Hello Hi There! Test!'))
+
+// Form Submit
+forms.forEach(form => {
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        makeNewSiblingNode()
+    })
+})
+
+
+//
+
+
+// console.log(createTask())
+// console.log(createTask('Hello Hi There! Test!'))
 
 
 // taskItem.textContent = task.title;

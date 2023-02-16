@@ -12,7 +12,7 @@
     <div>
       <div class="bar" id="menubar">
         <div class="profile" id="profileMenu">
-          <h3 class="profile-text profileItems" id="profileText">yourName</h3>
+          <h3 class="profile-text profileItems" id="profileText">yourUsername</h3>
           <img class="profileItems" src="./anonProfileIconGrey.svg" id="profileImage" />
           <img class="profileItems" src="./settingsGrey.svg" id="settingsIcon" />
         </div>
@@ -29,15 +29,18 @@
         <div id="uuid" class="node">
           <div class="triangleRight"></div>
           <div class="nodeContainer">
-            <form class="nodeForm">
-              <input type="text" class="nodeTitle" placeholder="Add title..">
-            </form>
+            <div class="nodeTitle">Title</div>
             <div class="nodeMenu">
-                <button class="nodeBtn nodePin dueDate">22.dec</button>
-                <button class="nodeBtn nodePin nodePriority">H</button>
-                <button class="nodeBtn nodePin nodeOwner">
-                  <img src="./anonProfileIconGrey.svg" alt="Profile Icon">
-                </button>
+              <div class="nodePinMenu">
+                <!-- <button class="nodeBtn nodePin startDate">1.dec</button>
+                <button class="nodeBtn nodePin dueDate">22.dec</button> -->
+                <button class="nodeBtn nodePin nodeOwner">u</button>
+                <button class="nodeBtn nodePin info">i</button>
+              </div>
+              <div class="nodeProgressMenu">
+                <div class="nodeProgress"></div>
+                <div class="nodeProgressTracker"></div>
+              </div>
             </div>
           </div>
         </div>

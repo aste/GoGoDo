@@ -5,14 +5,10 @@ html {
   --dark-grey: #64748b;
   --grey: #94a3b8;
   --light-grey: #cbd5e1;
-  --background: hsl(210, 40%, 95%);
-  --light-background: hsl(210, 40%, 97%);
-  --l1: #cffafe;
-  --l2: #22d3ee;
-  --l3: #0891b2;
+  --background: #f1f5f9;
+  --light-background: #f8fafc;
   --node-margin: 0.25rem;
-  --box-shadow: 0.1rem 0.1rem 0.1rem rgba(0, 0, 0, 0.1);
-  /* box-shadow: [horizontal-] [vertical offset] [blur-] [spread radius] [color]; */
+  --box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05), 0 1px 1px rgba(0, 0, 0, 0.05);
   --menubar-height: 8rem;
   font-family: "Roboto", sans-serif;
   height: 100%;
@@ -107,7 +103,6 @@ h3 {
   max-width: 50rem;
   min-width: 30rem;
   border-radius: 0.5rem;
-  padding: 0.25rem 0.25rem 0.25rem 0.25rem;
 }
 
 .node {
@@ -116,35 +111,6 @@ h3 {
   grid-template-columns: repeat(36, 1fr);
   grid-template-rows: 1fr;
   grid-column-gap: 0.2rem;
-}
-
-.nodeForm {
-  display: flex;
-  align-self: center;
-  border: none;
-  margin: 0;
-  padding: 0;
-  flex-grow: 1;
-}
-
-::placeholder {
-  font-family: "Roboto", sans-serif;
-  color: var(--light-grey);
-  font-size: 1rem;
-}
-
-input.nodeTitle:focus {
-  outline-width: 0;
-}
-
-.nodeTitle {
-  flex-grow: 1;
-  border: none;
-  background-color: transparent;
-  margin-right: 1rem;
-  font-family: "Roboto", sans-serif;
-  color: var(--dark-grey);
-  font-size: 1rem;
 }
 
 .triangleRight {
@@ -175,47 +141,28 @@ input.nodeTitle:focus {
   margin: var(--node-margin) 0 var(--node-margin) 0;
   color: var(--grey);
   justify-content: space-between;
+  border: solid 1px var(--light-background);
+  background-color: white;
   height: 1.5rem;
   border-radius: 0.75rem;
   margin: 0.25rem;
   background-color: var(--light-background);
 }
 
+#uuid {
+}
+
 .nodeBtn {
-  text-align: center;
-  margin: 0;
-  padding: 0 0.25rem 0 0.25rem;
+  min-width: 1rem;
   height: 1rem;
-  font-size: 0.75rem;
-  border: none;
+  font-size: 0.6rem;
   color: var(--grey);
-  background-color: white;
-  outline: var(--background) 0.1rem solid;
+  text-align: center;
+  padding: 0.1rem;
+  background-color: var(--pr);
+  border: #cbd5e1 0.05rem solid;
   border-radius: 0.5rem;
   margin-left: var(--node-margin);
-}
-
-.dueDate {
-  min-width: 1rem;
-}
-.nodePriority,
-.nodeOwner {
-  width: 1rem;
-}
-
-.nodeOwner img {
-  width: 1.2rem;
-  height: 1rem;
-  margin: 0;
-  border: 0;
-}
-
-.nodeOwner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  border: none;
 }
 
 .nodeTextArea {
@@ -224,11 +171,21 @@ input.nodeTitle:focus {
 }
 .nodeMenu {
   display: flex;
+  flex-direction: column;
+  width: 9rem;
+}
+.nodePinMenu {
+  display: flex;
   justify-content: right;
   margin: var(--node-margin);
-  width: 18rem;
 }
 
+.nodeDescription {
+  font-size: 0.8rem;
+  color: var(--light-grey);
+}
+
+.nodeBtn,
 .nodeContainer,
 #menubar,
 #mainList {

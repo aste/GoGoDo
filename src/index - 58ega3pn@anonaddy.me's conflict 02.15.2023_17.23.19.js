@@ -14,6 +14,7 @@ let taskItem = document.createElement("div");
 
 function createTask(title) {
     return {
+        // not visible to the user
         uuid: uuid(),
         parent: undefined,
         child: undefined,
@@ -21,9 +22,9 @@ function createTask(title) {
         title: title,
         startDate: dateFns.addHours(dateFns.startOfDay(new Date()), 8),
         dueDate: dateFns.addDays(dateFns.addHours(dateFns.startOfDay(new Date()), 18), 7),
-        priorityLevel: 1, // 1 to 3
-        progress: 0, // 0 to 100
-        // infoBtnActive: false,
+        priorityLevel: 1, // 1 to 5
+        progress: 0,
+        infoBtnActive: false,
         // Info windows
         // scope: undefined, // estimated hours or work (NA)
         // archive: false,

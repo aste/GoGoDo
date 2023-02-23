@@ -9,18 +9,16 @@
     <link rel="icon" href="./checkMark.svg" />
   </head>
   <body>
-    <div>
-      <div class="bar" id="menubar">
-        <div class="profile" id="profileMenu">
-          <h3 class="profile-text profileItems" id="profileText">yourName</h3>
-          <img class="profileItems" src="./anonProfileIconGrey.svg" id="profileImage" />
-          <img class="profileItems" src="./settingsGrey.svg" id="settingsIcon" />
-        </div>
+    <div class="bar" id="menubar">
+      <div class="profile" id="profileMenu">
+        <h3 class="profile-text profileItems" id="profileText">yourName</h3>
+        <img class="profileItems" src="./anonProfileIconGrey.svg" id="profileImage" />
+        <img class="profileItems" src="./settingsGrey.svg" id="settingsIcon" />
+      </div>
 
-        <div class="bar" id="logoBar">
-          <img src="./gogodoLogoCyan.svg" id="gogodoLogo" />
-          <h3 class="logoSubheader">To-Do, or not To-Do? That is the question</h3>
-        </div>
+      <div class="bar" id="logoBar">
+        <img src="./gogodoLogoCyan.svg" id="gogodoLogo" />
+        <h3 class="logoSubheader">To-Do, or not To-Do? That is the question</h3>
       </div>
     </div>
     <div id="mapListArea">
@@ -30,18 +28,55 @@
           <div class="triangleRight"></div>
           <div class="nodeContainer">
             <form class="nodeForm">
-              <input type="text" class="nodeTitle" placeholder="Add title..">
+              <input type="text" class="nodeTitle" placeholder="Add title.." />
             </form>
             <div class="nodeMenu">
-                <button class="nodeBtn dueDate" title="Due december 22nd 2023">22.dec</button>
-                <button class="nodeBtn nodePriority" title="High priority">H</button>
-                <button class="nodeBtn nodeOwner" title="You are the project manager">
-                  <img src="./anonProfileIconGrey.svg" alt="Profile Icon">
-                </button>
+              <button class="nodeBtn dueDate" title="Due December 22nd 2023">22.dec</button>
+              <button class="nodeBtn nodePriority" title="High Priority">H</button>
+              <button class="nodeBtn nodeOwner" title="You are the manager">
+                <img src="./anonProfileIconGrey.svg" alt="Profile Icon" />
+              </button>
             </div>
           </div>
         </div>
-        
+
+        <button class="nodeBtn newTask" title="Add a new task">
+          <img src="./addBtnCyan.svg" alt="Add a New Task" />
+        </button>
+      </div>
+      <div class="nav">
+        <div class="navBorder" title="Show/Hide Shortcuts">→</div>
+        <div class="main">
+          <h3>Keyboard Shortcuts</h3>
+          <div class="navLink">
+            <p class="navShortcut">New</p>
+            <p class="navKey">Enter</p>
+          </div>
+          <div class="navLink">
+            <p class="navShortcut">Complete</p>
+            <p class="navKey">Cmd/Ctrl + Enter</p>
+          </div>
+          <div class="navLink">
+            <p class="navShortcut">Delete</p>
+            <p class="navKey">Cmd/Ctrl + Backspace</p>
+          </div>
+          <div class="navLink">
+            <p class="navShortcut">Indent</p>
+            <p class="navKey">Tab</p>
+          </div>
+          <div class="navLink">
+            <p class="navShortcut">Unindent</p>
+            <p class="navKey">Shift + Tab</p>
+          </div>
+          <div class="navLink">
+            <p class="navShortcut">Expand</p>
+            <p class="navKey">Cmd/Ctrl + ↓</p>
+          </div>
+          <div class="navLink">
+            <p class="navShortcut">Collapse</p>
+            <p class="navKey">Cmd/Ctrl + ↑</p>
+          </div>
+        </div>
       </div>
     </div>
   </body>

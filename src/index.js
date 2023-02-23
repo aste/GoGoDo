@@ -5,16 +5,30 @@ import settingsIcon from './assets/settingsGrey.svg'
 import gogodoLogo from './assets/gogodoLogoCyan.svg'
 import tabIcon from './assets/checkMark.svg'
 import addBtn from './assets/addBtnCyan.svg'
+import infoBtn from './assets/info.svg'
 const dateFns = require('date-fns')
 
-let task = createTask("Task name");
-let taskList = document.getElementById("mainTaskList");
-let forms = document.querySelectorAll(".nodeForm");
-let taskItem = document.createElement("div");
+// Navigation Bar
+const collapsedClass = "navCollapsed";
+const nav = document.querySelector(".nav")
+const navBorder = nav.querySelector(".navBorder")
+
+navBorder.addEventListener('click', () => {
+    console.log('its happening');
+    nav.classList.toggle(collapsedClass);
+    if (navBorder.innerHTML === '→') {
+        navBorder.innerHTML = '←'
+    } else { navBorder.innerHTML = '→' }
+})
+
+// let task = createTask("Task name");
+const mainTaskList = document.getElementById("mainTaskList");
+const forms = document.querySelectorAll(".nodeForm");
+const taskItem = document.createElement("div");
 
 
 // Factory Function for the To-Do Node Objects
-function createTask(nodeTitle) {
+function createNode(nodeTitle) {
     return {
         uuid: uuid(),
         collapseNode: false,
@@ -23,7 +37,7 @@ function createTask(nodeTitle) {
         priorityLevel: "H",
         projectManager: "You",
         parent: undefined,
-        child: undefined,
+        children: [],
     }
 }
 
@@ -32,9 +46,12 @@ function createTask(nodeTitle) {
 forms.forEach(form => {
     form.addEventListener('submit', function (event) {
         event.preventDefault();
-        makeNewSiblingNode()
+        createNode()
     })
 })
+
+
+
 
 
 //

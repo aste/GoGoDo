@@ -22,31 +22,32 @@
       </div>
     </div>
     <div id="mapListArea">
-      <div id="mainList">
-        <!-- One Project Node -->
-        <div id="uuid" class="node">
-          <div class="triangleRight"></div>
-          <div class="nodeContainer">
-            <form class="nodeForm">
-              <input type="text" class="nodeTitle" placeholder="Add title.." />
-            </form>
-            <div class="nodeMenu">
-              <button class="nodeBtn dueDate" title="Due December 22nd 2023">22.dec</button>
-              <button class="nodeBtn nodePriority" title="High Priority">H</button>
-              <button class="nodeBtn nodeOwner" title="You are the manager">
-                <img src="./anonProfileIconGrey.svg" alt="Profile Icon" />
-              </button>
+      <div id="mainListWrapper">
+        <div id="mainList">
+          <!-- Project Nodes Injected Below -->
+          <div id="uuid" class="node">
+            <div class="triangleRight"></div>
+            <div class="nodeContainer">
+              <form class="nodeForm">
+                <input type="text" class="nodeTitle" placeholder="Add title.." />
+              </form>
+              <div class="nodeMenu">
+                <button class="nodeBtn dueDate" title="Due December 22nd 2023">22.dec</button>
+                <button class="nodeBtn nodePriority" title="High Priority">H</button>
+                <button class="nodeBtn nodeOwner" title="You are the manager">
+                  <img src="./anonProfileIconGrey.svg" alt="Profile Icon" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
-
-        <button class="nodeBtn newTask" title="Add a new task">
+        <button id="newTaskBtn" class="nodeBtn newTask" title="Add a new task">
           <img src="./addBtnCyan.svg" alt="Add a New Task" />
         </button>
       </div>
       <div class="nav">
         <div class="navBorder" title="Show/Hide Shortcuts">→</div>
-        <div class="main">
+        <div class="navMain">
           <h3>Keyboard Shortcuts</h3>
           <div class="navLink">
             <p class="navShortcut">New</p>
@@ -60,7 +61,7 @@
             <p class="navShortcut">Delete</p>
             <p class="navKey">Cmd/Ctrl + Backspace</p>
           </div>
-          <div class="navLink">
+          <div class="navLink separationDiv">
             <p class="navShortcut">Indent</p>
             <p class="navKey">Tab</p>
           </div>
@@ -68,13 +69,29 @@
             <p class="navShortcut">Unindent</p>
             <p class="navKey">Shift + Tab</p>
           </div>
-          <div class="navLink">
-            <p class="navShortcut">Expand</p>
-            <p class="navKey">Cmd/Ctrl + ↓</p>
+          <div class="navLink separationDiv">
+            <p class="navShortcut">Move to Previous</p>
+            <p class="navKey">↑</p>
           </div>
           <div class="navLink">
-            <p class="navShortcut">Collapse</p>
+            <p class="navShortcut">Move to Next</p>
+            <p class="navKey">↓</p>
+          </div>
+          <div class="navLink separationDiv">
+            <p class="navShortcut">Move Up</p>
             <p class="navKey">Cmd/Ctrl + ↑</p>
+          </div>
+          <div class="navLink">
+            <p class="navShortcut">Move Down</p>
+            <p class="navKey">Cmd/Ctrl + ↓</p>
+          </div>
+          <div class="navLink separationDiv">
+            <p class="navShortcut">Collapse</p>
+            <p class="navKey">Cmd/Ctrl + Shift + ↑</p>
+          </div>
+          <div class="navLink">
+            <p class="navShortcut">Expand</p>
+            <p class="navKey">Cmd/Ctrl + Shift + ↓</p>
           </div>
         </div>
       </div>

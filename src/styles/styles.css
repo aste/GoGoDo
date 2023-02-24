@@ -15,10 +15,22 @@ html {
   --node-margin: 0.25rem;
   --box-shadow: 0.1rem 0.1rem 0.1rem rgba(0, 0, 0, 0.1);
   --menubar-width: 8rem;
-  --nav-collapsed-width: 18px;
+  --nav-collapsed-width: 1.375rem;
   --nav-line-width: 2px;
   --nav-width: 16rem;
   font-family: "Roboto", sans-serif;
+}
+
+/* General Styles */
+h3 {
+  color: var(--grey);
+  font-size: 0.85rem;
+}
+
+p {
+  color: var(--grey);
+  font-size: 0.8rem;
+  margin: 0.5rem 0 0.5rem 0;
 }
 
 body {
@@ -45,6 +57,7 @@ body,
   padding: 0;
 }
 
+/* Top bar */
 #menubar {
   display: flex;
   position: relative;
@@ -59,16 +72,6 @@ body,
   justify-content: flex-end;
   align-items: center;
   padding: 0 0.75rem 0 0;
-}
-
-h3 {
-  color: var(--grey);
-  font-size: 0.85rem;
-}
-
-p {
-  color: var(--grey);
-  font-size: 0.8rem;
 }
 
 #logoBar {
@@ -107,13 +110,13 @@ p {
   margin: 0;
 }
 
-#mainList {
+/* Main list for all ToDo Nodes */
+#mainListWrapper {
   margin: 1rem auto 1rem auto;
   display: flex;
   flex-direction: column;
   background-color: var(--very-light-background);
-  max-width: 50rem;
-  min-width: 30rem;
+  width: clamp(30rem, 50rem, 100%);
   border-radius: 0.5rem;
   padding: 0.25rem;
 }
@@ -188,6 +191,9 @@ p {
   margin: 0.25rem;
   background-color: var(--light-background);
 }
+.nodeContainer:focus-within {
+  background-color: var(--l1);
+}
 
 .nodeBtn {
   text-align: center;
@@ -217,7 +223,7 @@ p {
   border: none;
 }
 
-.newTask {
+#newTaskBtn {
   margin-top: auto;
   margin-bottom: 2.75rem;
   align-self: flex-end;
@@ -225,7 +231,25 @@ p {
   outline: none;
 }
 
-.main {
+#newTaskBtn:active {
+  transform: scale(0.98);
+}
+
+/* Navigation Bar */
+
+.nav {
+  display: flex;
+  width: var(--nav-width);
+  margin: 0;
+  background-color: var(--very-light-background);
+  transition: 0.15s;
+}
+
+.navCollapsed {
+  width: var(--nav-collapsed-width);
+}
+
+.navMain {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -233,32 +257,18 @@ p {
   margin: 0;
   padding-left: 0.25rem;
   overflow-y: auto;
-  outline: red 1px solid;
 }
 
-p {
-  margin: 0.5rem 0 0.5rem 0;
-}
-
-.navLink {
-  display: flex;
-  justify-content: space-between;
-  margin: 0 1.5rem 0 0;
-}
-
-/* Navigation Bar */
-.nav {
-  display: flex;
-  width: var(--nav-width);
-  margin: 0;
-  background-color: var(--very-light-background);
-  transition: width 0.2s;
+.navLine {
+  background-color: var(--l2);
+  width: var(--nav-line-width);
 }
 
 .navBorder {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  text-align: center;
   border-left: var(--l2) solid 2px;
   color: var(--grey);
   background-color: var(--very-light-background);
@@ -267,20 +277,23 @@ p {
 }
 
 .navBorder:hover {
-  cursor: pointer;
   background-color: var(--background);
 }
 
-.navLine {
-  background-color: var(--l2);
-  width: var(--nav-line-width);
+.navLink {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 1.5rem 0 0;
 }
 
-.navCollapsed {
-  width: var(--nav-collapsed-width);
+.navLink.separationDiv {
+  border-top: 1px solid var(--light-grey);
+  padding-top: 0.25rem;
+  margin-top: 0.25rem;
 }
 
-.nodeBtn:hover {
+.nodeBtn:hover,
+.navBorder:hover {
   cursor: pointer;
 }
 
@@ -330,6 +343,6 @@ p {
 
 .nodeContainer,
 .bar,
-#mainList {
+#mainListWrapper {
   box-shadow: var(--box-shadow);
 }

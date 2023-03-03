@@ -16,7 +16,6 @@ html {
   --box-shadow: 0.1rem 0.1rem 0.1rem rgba(0, 0, 0, 0.1);
   --menubar-width: 8rem;
   --nav-collapsed-width: 1.375rem;
-  --nav-line-width: 2px;
   --nav-width: 16rem;
   font-family: "Roboto", sans-serif;
 }
@@ -110,7 +109,7 @@ body,
   margin: 0;
 }
 
-/* Main list for all ToDo Nodes */
+/* Main list for Nodes */
 #mainListWrapper {
   margin: 1rem auto 1rem auto;
   display: flex;
@@ -121,6 +120,8 @@ body,
   padding: 0.25rem;
 }
 
+
+/* Nodes */
 .node {
   display: grid;
   align-items: center;
@@ -269,7 +270,7 @@ body,
   flex-direction: column;
   justify-content: center;
   text-align: center;
-  border-left: var(--l2) solid 2px;
+  border-left: var(--l2) solid 1px;
   color: var(--grey);
   background-color: var(--very-light-background);
   width: var(--nav-collapsed-width);

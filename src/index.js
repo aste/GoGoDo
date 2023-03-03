@@ -47,10 +47,10 @@ function createNodeObject(nodeTitle) {
 }
 
 
-function createNodeElement(node) {
+function renderNodeElement(node) {
     const nodeElement = document.createElement('div');
     nodeElement.id = node.uuid;
-    console.log(`node.uuid: ${node.uuid}`)
+    // console.log(`node.uuid: ${node.uuid}`)
     nodeElement.classList.add('node');
 
     const triangleElement = document.createElement('div');
@@ -63,12 +63,27 @@ function createNodeElement(node) {
 
     const formElement = document.createElement('form');
     formElement.classList.add('nodeForm');
+
+    formElement.addEventListener('submit', function (event) {
+        event.preventDefault();
+        newNode('');
+        // event.target(this.nextSibling)
+    })
     nodeContainerElement.appendChild(formElement);
 
     const inputElement = document.createElement('input');
     inputElement.type = 'text';
     inputElement.classList.add('nodeTitle');
     inputElement.placeholder = 'Add title..';
+    inputElement.value = node.nodeTitle;
+    inputElement.addEventListener('input', (event) => {
+        node.nodeTitle = event.target.value
+        console.log(node.nodeTitle)
+        // node.nodeTitle = inputElement.value;
+        // for (let i = 0; i < rootList.length; i++) {
+        //     console.log(rootList[i]);
+        // }
+    })
     formElement.appendChild(inputElement);
 
     const nodeMenuElement = document.createElement('div');
@@ -96,98 +111,30 @@ function createNodeElement(node) {
     ownerBtn.appendChild(ownerImg);
     nodeMenuElement.appendChild(ownerBtn);
 
+
+
     return nodeElement;
 }
 
 
-const initiateAppendNewNode = () => {
-    const node = createNodeObject('');
-    const nodeElement = createNodeElement(node);
+function newNode(title) {
+    const node = createNodeObject(title);
+    const nodeElement = renderNodeElement(node);
     mainList.appendChild(nodeElement);
+    rootList.push(node);
 }
+
 
 newTaskBtn.addEventListener('click', (event) => {
-    initiateAppendNewNode()
+    newNode('')
 })
-// renderTodoList(todoItems);
-// // Form Submit
 
-const addFormEvent = () => {
-    forms.forEach(form => {
-        form.addEventListener('submit', function (event) {
-            event.preventDefault();
-            event.initiateAppendNewNode()
-        })
-    })
+newNode('A life well lived')
+newNode('Help others live a better life')
+newNode('Leave it better than your found it')
+newNode('')
+
+
+for (let i = 0; i < rootList.length; i++) {
+    console.log(rootList[i]);
 }
-
-
-// // Create the root node
-// const rootNode = createNodeObject("My To-Do List");
-
-// // Add child nodes
-// const node1 = createNodeObject("Task 1");
-// const node2 = createNodeObject("Task 2");
-// const node3 = createNodeObject("Task 3");
-// rootNode.children.push(node1, node2, node3);
-
-// function renderTodoList(todoItems) {
-//     const todoListContainer = document.getElementById("todo-list");
-//     todoListContainer.innerHTML = "";
-
-//     todoItems.forEach(item => {
-//         const todoItemElement = `
-//         <div class="todo-item">
-//           <input type="checkbox" ${item.completed ? "checked" : ""}>
-//           <span>${item.title}</span>
-//         </div>
-//       `;
-//         todoListContainer.insertAdjacentHTML("beforeend", todoItemElement);
-//     });
-// }
-
-// const todoItems = [
-//     { title: "Do laundry", completed: false },
-//     { title: "Buy groceries", completed: true },
-//     { title: "Walk the dog", completed: false },
-// ];
-
-
-
-
-
-
-//
-
-
-console.log(createTask())
-console.log(createTask('Hello Hi There! Test!'))
-
-
-// taskItem.textContent = task.title;
-// taskItem.setAttribute("id", task.uuid);
-// let deleteBtn = document.createElement("button");
-// deleteBtn.textContent = "Delete";
-// deleteBtn.classList.add("delete-btn");
-// taskItem.appendChild(deleteBtn);
-// taskList.appendChild(taskItem);
-
-// For later user implementation\
-// Undo
-// nodeOwner: undefined, // define the user who owns this tasks and the responsibilities
-// Time Map for visual project-planning
-// resourcePath: 'optional resource path',
-// dependencies: undefined, // dependents on all child nodes and potentially other nodes
-// readPermission: undefined, // define users who have permission to read this task
-// writePermission: undefined, // define users who have permission to edit or add items
-// deletePermission: undefined, // define users who have permission to delete to this task
-// readAccess: undefined, //  all children of the task
-// function newUser(name) {
-//     return {
-//         officeHoursStart: undefined,
-//         officeHoursEnd: undefined,
-//         officeDays: undefined,
-//         workingOn: undefined,
-//         flowStatus: undefined,
-//     }
-// }

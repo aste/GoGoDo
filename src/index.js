@@ -11,6 +11,7 @@ import tabIcon from './assets/checkMark.svg'
 import addBtn from './assets/addBtnCyan.svg'
 import infoBtn from './assets/info.svg'
 
+
 // Navigation Bar
 const collapsedClass = "navCollapsed";
 const nav = document.querySelector(".nav")
@@ -23,34 +24,103 @@ navBorder.addEventListener('click', () => {
     } else { navBorder.innerHTML = '→' }
 })
 
+// DOM References
+const mainList = document.getElementById("mainList");
+const newTaskBtn = document.getElementById('newTaskBtn');
+// const forms = document.querySelectorAll(".nodeForm");
 
 // ToDo Nodes
-const rootList = []
-const mainList = document.getElementById("mainList");
-const forms = document.querySelectorAll(".nodeForm");
-const newTaskBtn = document.getElementById('newTaskBtn')
+const rootList = {
+    title: 'Root List',
+    uuid: uuid(),
+    parent: undefined,
+    children: [],
+
+}
 
 
-function createNodeObject(nodeTitle) {
+
+function createNodeObject(title) {
     return {
+        title: title,
         uuid: uuid(),
-        collapseNode: false,
-        nodeTitle: nodeTitle,
         dueDate: dateFns.addDays(dateFns.addHours(dateFns.startOfDay(new Date()), 18), 7),
         priorityLevel: "H",
         projectManager: "You",
-        indentationLevel: 0,
+        collapseNode: false,
         complete: false,
-        parent: undefined,
         children: [],
+        parent: parent,
+        indentationLevel: 0,
     }
 }
 
 
+function insertNodeObject(nodeObject, parent = rootList, index = parent.children.length) {
+    nodeObject.parent = parent
+    parent.children.splice(index, 0, nodeObject)
+    // const node1 = createNodeObject('A life well lived')
+    // insertNodeObject(node1, rootList, 0)
+    // const node2 = createNodeObject('Help others live a better life')
+    // insertNodeObject(node2, node1, 0)
+}
+
+const distanceToRootNode = (node) => {
+    let distance = 0;
+    if (node.parent) {
+        distance += 1 + distanceToRootNode(node.parent)
+    }
+    return distance
+}
+
+function findNodeIndex(node, uuid) {
+    for (let i = 0; i < node.parent.children.length; i++) {
+        if (node.parent.children[i].uuid === uuid) {
+            return i
+        }
+    }
+}
+
+function findNodeParent(node) { }
+
+
+function appendNewNode(title, parent = rootList, index = parent.children.length) {
+    const node = createNodeObject(title);
+    insertNodeObject(node, parent, index)
+
+    // const nodeElement = renderNodeElement(node);
+    // mainList.appendChild(nodeElement);
+
+}
+
+newTaskBtn.addEventListener('click', (event) => {
+    appendNewNode('')
+    console.log(rootList)
+})
+
+appendNewNode('A life well lived')
+appendNewNode('Help others live a better life')
+appendNewNode('Leave the world better than you found it')
+appendNewNode('')
+
+// console.log(rootList)
+
+for (let i = 0; i < rootList.children.length; i++) {
+    console.log(`at index: ${i}`);
+    console.log(rootList.children[i]);
+    console.log('');
+}
+
+function renderNodeTree(node) {
+    for (let i = 0; node.parent.children.length > i; i++) {
+        renderNodeElement(node)
+    }
+}
+
+// Render to DOM
 function renderNodeElement(node) {
     const nodeElement = document.createElement('div');
     nodeElement.id = node.uuid;
-    // console.log(`node.uuid: ${node.uuid}`)
     nodeElement.classList.add('node');
 
     const triangleElement = document.createElement('div');
@@ -66,23 +136,26 @@ function renderNodeElement(node) {
 
     formElement.addEventListener('submit', function (event) {
         event.preventDefault();
-        newNode('');
+        // console.log(inputElement.dataset.uuid)
+        const parent = node.parent
+        const index = findNodeIndex(node, inputElement.dataset.uuid)
+        console.log(inputElement.dataset.uuid)
+        console.log(index)
+        console.log(mainList[index])
+        console.log(node)
+        appendNewNode('', parent, index);
         // event.target(this.nextSibling)
     })
     nodeContainerElement.appendChild(formElement);
 
     const inputElement = document.createElement('input');
     inputElement.type = 'text';
-    inputElement.classList.add('nodeTitle');
+    inputElement.classList.add(`title`);
     inputElement.placeholder = 'Add title..';
-    inputElement.value = node.nodeTitle;
+    inputElement.value = node.title;
+    inputElement.dataset.uuid = node.uuid
     inputElement.addEventListener('input', (event) => {
-        node.nodeTitle = event.target.value
-        console.log(node.nodeTitle)
-        // node.nodeTitle = inputElement.value;
-        // for (let i = 0; i < rootList.length; i++) {
-        //     console.log(rootList[i]);
-        // }
+        node.title = event.target.value
     })
     formElement.appendChild(inputElement);
 
@@ -111,30 +184,5 @@ function renderNodeElement(node) {
     ownerBtn.appendChild(ownerImg);
     nodeMenuElement.appendChild(ownerBtn);
 
-
-
     return nodeElement;
-}
-
-
-function newNode(title) {
-    const node = createNodeObject(title);
-    const nodeElement = renderNodeElement(node);
-    mainList.appendChild(nodeElement);
-    rootList.push(node);
-}
-
-
-newTaskBtn.addEventListener('click', (event) => {
-    newNode('')
-})
-
-newNode('A life well lived')
-newNode('Help others live a better life')
-newNode('Leave it better than your found it')
-newNode('')
-
-
-for (let i = 0; i < rootList.length; i++) {
-    console.log(rootList[i]);
 }

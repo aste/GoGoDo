@@ -145,11 +145,11 @@ body,
   font-size: 1rem;
 }
 
-.nodeTitle:focus {
+.title:focus {
   outline: none;
 }
 
-.nodeTitle {
+.title {
   flex-grow: 1;
   border: none;
   background-color: transparent;
@@ -175,7 +175,7 @@ body,
   border-color: transparent transparent transparent var(--dark-grey);
 }
 
-.nodeTitle {
+.title {
   align-self: center;
   margin-left: 0.5rem;
 }

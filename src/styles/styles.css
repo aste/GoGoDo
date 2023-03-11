@@ -110,16 +110,16 @@ body,
 }
 
 /* Main list for Nodes */
-#mainListWrapper {
+#mainNodeWrapper {
   margin: 1rem auto 1rem auto;
   display: flex;
   flex-direction: column;
   background-color: var(--very-light-background);
+  /* background-color: red; */
   width: clamp(30rem, 50rem, 100%);
   border-radius: 0.5rem;
   padding: 0.25rem;
 }
-
 
 /* Nodes */
 .node {
@@ -344,6 +344,6 @@ body,
 
 .nodeContainer,
 .bar,
-#mainListWrapper {
+#mainNodeWrapper {
   box-shadow: var(--box-shadow);
 }

@@ -25,20 +25,23 @@ navBorder.addEventListener('click', () => {
 })
 
 // DOM References
-const mainList = document.getElementById("mainList");
+const mainNodeWrapper = document.getElementById("mainNodeWrapper");
 const newTaskBtn = document.getElementById('newTaskBtn');
-// const forms = document.querySelectorAll(".nodeForm");
 
 // ToDo Nodes
-const rootList = {
-    title: 'Root List',
+const rootObj = {
+    title: 'rootObj',
     uuid: uuid(),
     parent: undefined,
     children: [],
-
 }
 
+// rootObj.parent = { children: [{}] }
 
+const mainNode = document.createElement('div')
+mainNode.id = rootObj.uuid
+mainNode.classList.add('mainNode')
+mainNodeWrapper.insertBefore(mainNode, newTaskBtn)
 
 function createNodeObject(title) {
     return {
@@ -50,75 +53,64 @@ function createNodeObject(title) {
         collapseNode: false,
         complete: false,
         children: [],
-        parent: parent,
+        parent: undefined,
         indentationLevel: 0,
     }
 }
 
-
-function insertNodeObject(nodeObject, parent = rootList, index = parent.children.length) {
-    nodeObject.parent = parent
-    parent.children.splice(index, 0, nodeObject)
-    // const node1 = createNodeObject('A life well lived')
-    // insertNodeObject(node1, rootList, 0)
-    // const node2 = createNodeObject('Help others live a better life')
-    // insertNodeObject(node2, node1, 0)
-}
-
-const distanceToRootNode = (node) => {
+function distanceToRoot(nodeObject) {
     let distance = 0;
-    if (node.parent) {
-        distance += 1 + distanceToRootNode(node.parent)
-    }
+    if (nodeObject.parent) { distance += 1 + distanceToRoot(nodeObject.parent) }
     return distance
 }
 
-function findNodeIndex(node, uuid) {
-    for (let i = 0; i < node.parent.children.length; i++) {
-        if (node.parent.children[i].uuid === uuid) {
-            return i
-        }
-    }
+function insertNodeObject(nodeObject, parent = rootObj, index = parent.children.length) {
+    nodeObject.parent = parent
+    nodeObject.indentationLevel = distanceToRoot(nodeObject)
+    parent.children.splice(index, 0, nodeObject)
 }
 
-function findNodeParent(node) { }
 
+// function findElementIndex(node, uuid) {
+//     for (let i = 0; i < node.parent.children.length; i++) {
+//         if (node.parent.children[i].uuid === uuid) {
+//             return i
+//         }
+//     }
+// }
 
-function appendNewNode(title, parent = rootList, index = parent.children.length) {
-    const node = createNodeObject(title);
-    insertNodeObject(node, parent, index)
-
-    // const nodeElement = renderNodeElement(node);
-    // mainList.appendChild(nodeElement);
-
-}
 
 newTaskBtn.addEventListener('click', (event) => {
-    appendNewNode('')
-    console.log(rootList)
+    const newNode = createNodeObject('')
+    insertNodeObject(newNode)
+    console.log(rootObj)
 })
 
-appendNewNode('A life well lived')
-appendNewNode('Help others live a better life')
-appendNewNode('Leave the world better than you found it')
-appendNewNode('')
 
-// console.log(rootList)
+// Initial Test nodes
+const firstObj = createNodeObject('1 A life well lived')
+insertNodeObject(firstObj)
 
-for (let i = 0; i < rootList.children.length; i++) {
-    console.log(`at index: ${i}`);
-    console.log(rootList.children[i]);
-    console.log('');
-}
+const secondObj = createNodeObject('2 Help others live a better life')
+insertNodeObject(secondObj, firstObj)
 
-function renderNodeTree(node) {
-    for (let i = 0; node.parent.children.length > i; i++) {
-        renderNodeElement(node)
-    }
-}
+const thirdObj = createNodeObject('3 Leave the world better than you found it')
+insertNodeObject(thirdObj, firstObj, 0)
+
+const fourthObj = createNodeObject('4 Another quote')
+insertNodeObject(fourthObj, undefined, 1)
+
+const fifthObj = createNodeObject('5 ...')
+insertNodeObject(fifthObj, firstObj)
+
+
+
+
+
 
 // Render to DOM
-function renderNodeElement(node) {
+function renderNode(node) {
+    // if (node.title === 'rootObj') { return }
     const nodeElement = document.createElement('div');
     nodeElement.id = node.uuid;
     nodeElement.classList.add('node');
@@ -136,15 +128,9 @@ function renderNodeElement(node) {
 
     formElement.addEventListener('submit', function (event) {
         event.preventDefault();
-        // console.log(inputElement.dataset.uuid)
         const parent = node.parent
         const index = findNodeIndex(node, inputElement.dataset.uuid)
-        console.log(inputElement.dataset.uuid)
-        console.log(index)
-        console.log(mainList[index])
-        console.log(node)
         appendNewNode('', parent, index);
-        // event.target(this.nextSibling)
     })
     nodeContainerElement.appendChild(formElement);
 
@@ -178,6 +164,7 @@ function renderNodeElement(node) {
     const ownerBtn = document.createElement('button');
     ownerBtn.classList.add('nodeBtn', 'nodeOwner');
     ownerBtn.title = 'You are the manager';
+
     const ownerImg = document.createElement('img');
     ownerImg.src = './anonProfileIconGrey.svg';
     ownerImg.alt = 'Profile Icon';
@@ -186,3 +173,86 @@ function renderNodeElement(node) {
 
     return nodeElement;
 }
+
+// function renderSubTree(object) {
+//     object.children.forEach(childObject => {
+//         console.log(`childObject.title: ${childObject.title}`)
+//         console.log('')
+//         renderSubTree(childObject);
+//     })
+// }
+
+// function renderTree(object) {
+//     let nodeElement
+//     let parentNodeElement
+
+//     if (object.uuid === rootObj.uuid) {
+//         nodeElement = document.getElementById(mainNode.id)
+//         parentNodeElement = document.getElementById("mainNodeWrapper")
+//         parentNodeElement.innerHTML = ''
+//     } else {
+//         nodeElement = renderNode(object)
+//         const node = document.getElementById(object.uuid)
+//         parentNodeElement = node.parentNode
+//         parentNodeElement.innerHTML = ''
+//     }
+//     parentNodeElement.appendChild(nodeElement)
+
+//     object.children.forEach(childObject => {
+//         const childElement = renderNode(childObject);
+//         nodeElement.appendChild(childElement);
+
+//         if (childObject.children.length > 0) {
+//             renderTree(childObject);
+//         }
+//     })
+// }
+
+
+function clearSubTree(object) {
+    const element = document.getElementById(object.uuid)
+    element.parentElement.innerHTML = ''
+}
+
+
+function renderSubTree(object) {
+    let element = undefined
+    let nodeElement = undefined
+
+    console.log(element)
+    console.log(object.uuid)
+    console.log(rootObj.uuid)
+
+    if (object.uuid !== rootObj.uuid) {
+        nodeElement = renderNode(object)
+        element = document.getElementById(object.uuid)
+        // element.parentElement.appendChild(nodeElement)
+    } else {
+        nodeElement = document.getElementById(mainNode.id)
+        element = document.getElementById(object.uuid)
+
+        // nodeElement = null
+        // element = document.getElementById(mainNode.id)
+        // console.log(nodeElement)
+        // element.parentElement.appendChild(nodeElement)
+    }
+
+
+    object.children.forEach(childObject => {
+        console.log(`childObject`)
+        console.log(childObject)
+        const childElement = renderNode(childObject);
+        element.parentElement.appendChild(childElement);
+
+        if (childObject.children.length > 0) {
+            renderSubTree(childObject);
+        }
+    })
+
+}
+
+
+// console.log(rootObj)
+// console.log('')
+
+renderSubTree(rootObj);

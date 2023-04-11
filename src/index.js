@@ -36,8 +36,6 @@ const rootObj = {
     children: [],
 }
 
-// rootObj.parent = { children: [{}] }
-
 const mainNode = document.createElement('div')
 mainNode.id = rootObj.uuid
 mainNode.classList.add('mainNode')
@@ -79,10 +77,22 @@ function insertNodeObject(nodeObject, parent = rootObj, index = parent.children.
 //     }
 // }
 
+console.log(mainNode)
+console.log(rootObj)
 
 newTaskBtn.addEventListener('click', (event) => {
-    const newNode = createNodeObject('')
+    const newNode = createNodeObject('Test')
+    console.log(newNode)
+
     insertNodeObject(newNode)
+    console.log(newNode)
+    console.log(rootObj)
+
+    clearSubTree(rootObj)
+    console.log(rootObj)
+    console.log(mainNode)
+
+    renderSubTree(rootObj)
     console.log(rootObj)
 })
 
@@ -174,85 +184,37 @@ function renderNode(node) {
     return nodeElement;
 }
 
-// function renderSubTree(object) {
-//     object.children.forEach(childObject => {
-//         console.log(`childObject.title: ${childObject.title}`)
-//         console.log('')
-//         renderSubTree(childObject);
-//     })
-// }
-
-// function renderTree(object) {
-//     let nodeElement
-//     let parentNodeElement
-
-//     if (object.uuid === rootObj.uuid) {
-//         nodeElement = document.getElementById(mainNode.id)
-//         parentNodeElement = document.getElementById("mainNodeWrapper")
-//         parentNodeElement.innerHTML = ''
-//     } else {
-//         nodeElement = renderNode(object)
-//         const node = document.getElementById(object.uuid)
-//         parentNodeElement = node.parentNode
-//         parentNodeElement.innerHTML = ''
-//     }
-//     parentNodeElement.appendChild(nodeElement)
-
-//     object.children.forEach(childObject => {
-//         const childElement = renderNode(childObject);
-//         nodeElement.appendChild(childElement);
-
-//         if (childObject.children.length > 0) {
-//             renderTree(childObject);
-//         }
-//     })
-// }
-
-
-function clearSubTree(object) {
-    const element = document.getElementById(object.uuid)
-    element.parentElement.innerHTML = ''
+function clearSubTree(parentObject) {
+    const element = document.getElementById(parentObject.uuid)
+    while (element.firstChild) {
+        element.removeChild(element.firstChild)
+    }
 }
 
+function renderSubTree(parentObject) {
+    let element
 
-function renderSubTree(object) {
-    let element = undefined
-    let nodeElement = undefined
-
-    console.log(element)
-    console.log(object.uuid)
-    console.log(rootObj.uuid)
-
-    if (object.uuid !== rootObj.uuid) {
-        nodeElement = renderNode(object)
-        element = document.getElementById(object.uuid)
-        // element.parentElement.appendChild(nodeElement)
+    if (parentObject.uuid !== rootObj.uuid) {
+        element = document.getElementById(parentObject.uuid)
     } else {
-        nodeElement = document.getElementById(mainNode.id)
-        element = document.getElementById(object.uuid)
-
-        // nodeElement = null
-        // element = document.getElementById(mainNode.id)
-        // console.log(nodeElement)
-        // element.parentElement.appendChild(nodeElement)
+        element = document.getElementById(parentObject.uuid)
     }
 
-
-    object.children.forEach(childObject => {
-        console.log(`childObject`)
-        console.log(childObject)
+    parentObject.children.forEach(childObject => {
         const childElement = renderNode(childObject);
-        element.parentElement.appendChild(childElement);
+        console.log(element)
+        console.log(element.className)
+        if (element.className === 'mainNode') {
+            element.appendChild(childElement);
+        } else {
+            element.parentElement.appendChild(childElement);
+        }
 
         if (childObject.children.length > 0) {
             renderSubTree(childObject);
         }
     })
-
 }
 
-
-// console.log(rootObj)
-// console.log('')
 
 renderSubTree(rootObj);

@@ -11,7 +11,6 @@ import tabIcon from './assets/checkMark.svg'
 import addBtn from './assets/addBtnCyan.svg'
 import infoBtn from './assets/info.svg'
 
-
 // Navigation Bar
 const collapsedClass = "navCollapsed";
 const nav = document.querySelector(".nav")
@@ -81,7 +80,7 @@ console.log(mainNode)
 console.log(rootObj)
 
 newTaskBtn.addEventListener('click', (event) => {
-    const newNode = createNodeObject('Test')
+    const newNode = createNodeObject('')
     console.log(newNode)
 
     insertNodeObject(newNode)
@@ -127,10 +126,13 @@ function renderNode(node) {
 
     const triangleElement = document.createElement('div');
     triangleElement.classList.add('triangleRight');
+    triangleElement.style.setProperty('grid-column-start', `${node.indentationLevel}`)
+    triangleElement.style.setProperty('grid-column-end', `${node.indentationLevel + 1}`)
     nodeElement.appendChild(triangleElement);
 
     const nodeContainerElement = document.createElement('div');
     nodeContainerElement.classList.add('nodeContainer');
+    nodeContainerElement.style.setProperty('grid-column-start', `${node.indentationLevel + 1}`)
     nodeElement.appendChild(nodeContainerElement);
 
     const formElement = document.createElement('form');

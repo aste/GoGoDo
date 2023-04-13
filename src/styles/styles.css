@@ -169,7 +169,7 @@ body,
 
 .triangleDown,
 .triangleRight {
-  grid-column: 1 / 2;
+  grid-column: 0 / 1;
   margin-left: 0.8rem;
   border-style: solid;
   border-color: transparent transparent transparent var(--dark-grey);
@@ -183,7 +183,8 @@ body,
 .nodeContainer {
   display: flex;
   flex-direction: row;
-  grid-column: 2 / 37;
+  /* grid-column: 2 / 37; */
+  grid-column-end: 37;
   margin: var(--node-margin) 0 var(--node-margin) 0;
   color: var(--grey);
   justify-content: space-between;
@@ -256,6 +257,7 @@ body,
   flex: 1;
   padding: 0;
   margin: 0;
+  margin-top: 0.75rem;
   padding-left: 0.25rem;
   overflow-y: auto;
 }
@@ -339,7 +341,7 @@ body,
   display: flex;
   justify-content: right;
   margin: var(--node-margin);
-  width: 18rem;
+  width: 8rem;
 }
 
 .nodeContainer,

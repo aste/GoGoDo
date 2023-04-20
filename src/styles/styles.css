@@ -238,7 +238,6 @@ body,
 }
 
 /* Navigation Bar */
-
 .nav {
   display: flex;
   width: var(--nav-width);

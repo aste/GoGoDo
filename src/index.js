@@ -3,6 +3,7 @@ import { v4 as uuid } from 'uuid'
 import "./styles/styles.css";
 const dateFns = require('date-fns')
 
+
 // Assets
 import profileImage from './assets/anonProfileIconGrey.svg'
 import settingsIcon from './assets/settingsGrey.svg'
@@ -11,34 +12,14 @@ import tabIcon from './assets/checkMark.svg'
 import addBtn from './assets/addBtnCyan.svg'
 import infoBtn from './assets/info.svg'
 
-// Navigation Bar
-const collapsedClass = "navCollapsed";
-const nav = document.querySelector(".nav")
-const navBorder = nav.querySelector(".navBorder")
 
-navBorder.addEventListener('click', () => {
-    nav.classList.toggle(collapsedClass);
-    if (navBorder.innerHTML === '→') {
-        navBorder.innerHTML = '←'
-    } else { navBorder.innerHTML = '→' }
-})
-
-// DOM References
-const mainNodeWrapper = document.getElementById("mainNodeWrapper");
-const newTaskBtn = document.getElementById('newTaskBtn');
-
-// ToDo Nodes
+// Node Objects
 const rootObj = {
     title: 'rootObj',
     uuid: uuid(),
     parent: undefined,
     children: [],
 }
-
-const mainNode = document.createElement('div')
-mainNode.id = rootObj.uuid
-mainNode.classList.add('mainNode')
-mainNodeWrapper.insertBefore(mainNode, newTaskBtn)
 
 function createNodeObject(title) {
     return {
@@ -68,61 +49,45 @@ function insertNodeObject(nodeObject, parent = rootObj, index = parent.children.
 }
 
 
-// function findElementIndex(node, uuid) {
-//     for (let i = 0; i < node.parent.children.length; i++) {
-//         if (node.parent.children[i].uuid === uuid) {
-//             return i
-//         }
-//     }
-// }
+function findNodeIndex(node) {
+    for (let i = 0; i < node.parent.children.length; i++) {
+        if (node.parent.children[i].uuid === node.uuid) {
+            return i
+        }
+    }
+}
 
-console.log(mainNode)
-console.log(rootObj)
 
-newTaskBtn.addEventListener('click', (event) => {
-    const newNode = createNodeObject('')
-    console.log(newNode)
+// DOM References
+const mainNodeWrapper = document.getElementById("mainNodeWrapper");
+const newTaskBtn = document.getElementById('newTaskBtn');
 
-    insertNodeObject(newNode)
-    console.log(newNode)
-    console.log(rootObj)
+// DOM Elements
+const collapsedClass = "navCollapsed";
+const nav = document.querySelector(".nav")
+const navBorder = nav.querySelector(".navBorder")
 
-    clearSubTree(rootObj)
-    console.log(rootObj)
-    console.log(mainNode)
-
-    renderSubTree(rootObj)
-    console.log(rootObj)
+navBorder.addEventListener('click', () => {
+    nav.classList.toggle(collapsedClass);
+    if (navBorder.innerHTML === '→') {
+        navBorder.innerHTML = '←'
+    } else { navBorder.innerHTML = '→' }
 })
 
-
-// Initial Test nodes
-const firstObj = createNodeObject('1 A life well lived')
-insertNodeObject(firstObj)
-
-const secondObj = createNodeObject('2 Help others live a better life')
-insertNodeObject(secondObj, firstObj)
-
-const thirdObj = createNodeObject('3 Leave the world better than you found it')
-insertNodeObject(thirdObj, firstObj, 0)
-
-const fourthObj = createNodeObject('4 Another quote')
-insertNodeObject(fourthObj, undefined, 1)
-
-const fifthObj = createNodeObject('5 ...')
-insertNodeObject(fifthObj, firstObj)
+const mainNode = document.createElement('div')
+mainNode.id = rootObj.uuid
+mainNode.classList.add('mainNode')
+mainNodeWrapper.insertBefore(mainNode, newTaskBtn)
 
 
+// DOM Manipulation
 
-
-
-
-// Render to DOM
 function renderNode(node) {
     // if (node.title === 'rootObj') { return }
     const nodeElement = document.createElement('div');
     nodeElement.id = node.uuid;
     nodeElement.classList.add('node');
+    nodeElement.dataset.indentlvl = node.indentationLevel
 
     const triangleElement = document.createElement('div');
     triangleElement.classList.add('triangleRight');
@@ -137,13 +102,26 @@ function renderNode(node) {
 
     const formElement = document.createElement('form');
     formElement.classList.add('nodeForm');
+    formElement.dataset.uuid = node.uuid
 
     formElement.addEventListener('submit', function (event) {
         event.preventDefault();
-        const parent = node.parent
-        const index = findNodeIndex(node, inputElement.dataset.uuid)
-        appendNewNode('', parent, index);
+
+        // Insert New Obj Node in Data Tree
+        const newNode = createNodeObject('')
+        insertNodeObject(newNode, node.parent, findNodeIndex(node) + 1)
+
+        // Update Dom
+        const newDomNode = renderNode(newNode)
+        const currentDomNode = document.getElementById(formElement.dataset.uuid)
+        appendDomNodeBeforeNextSibling(currentDomNode, newDomNode)
+        moveFocusTo(newNode.uuid)
     })
+
+    formElement.addEventListener('keydown', function (event) {
+        moveFocusUpDown(event)
+    })
+
     nodeContainerElement.appendChild(formElement);
 
     const inputElement = document.createElement('input');
@@ -151,7 +129,7 @@ function renderNode(node) {
     inputElement.classList.add(`title`);
     inputElement.placeholder = 'Add title..';
     inputElement.value = node.title;
-    inputElement.dataset.uuid = node.uuid
+    // inputElement.dataset.uuid = node.uuid
     inputElement.addEventListener('input', (event) => {
         node.title = event.target.value
     })
@@ -186,14 +164,56 @@ function renderNode(node) {
     return nodeElement;
 }
 
-function clearSubTree(parentObject) {
-    const element = document.getElementById(parentObject.uuid)
-    while (element.firstChild) {
-        element.removeChild(element.firstChild)
+function moveFocusTo(uuid) {
+    const formElement = document.querySelector(`form[data-uuid="${uuid}"]`)
+    const inputField = formElement.querySelector('input.title')
+    inputField.focus()
+}
+
+function moveFocusUpDown(event) {
+    const inputField = event.target;
+    const currentDomNode = inputField.closest('.node');
+    const previousDomNode = currentDomNode.previousElementSibling;
+    const nextDomNode = currentDomNode.nextElementSibling;
+
+    if (event.keyCode === 40) { // Down arrow key
+        event.preventDefault();
+        if (nextDomNode) {
+            const nextInputField = nextDomNode.querySelector('.title');
+            if (nextInputField) {
+                nextInputField.focus();
+            }
+        }
+    }
+    if (event.keyCode === 38) { // Up arrow key
+        event.preventDefault();
+        if (previousDomNode) {
+            const previousInputField = previousDomNode.querySelector('.title');
+            if (previousInputField) {
+                previousInputField.focus();
+            }
+        }
     }
 }
 
-function renderSubTree(parentObject) {
+function appendDomNodeBeforeNextSibling(currentDomNode, newDomNode) {
+    const currentIndentLevel = currentDomNode.getAttribute('data-indentlvl')
+    let nextSiblingFound = false
+
+    for (let sibling = currentDomNode.nextElementSibling; sibling; sibling = sibling.nextElementSibling) {
+        if (sibling.getAttribute('data-indentlvl') === currentIndentLevel) {
+            currentDomNode.parentElement.insertBefore(newDomNode, sibling)
+            nextSiblingFound = true;
+            break;
+        }
+    }
+
+    if (!nextSiblingFound) {
+        currentDomNode.after(newDomNode)
+    }
+}
+
+function renderTreeToDom(parentObject) {
     let element
 
     if (parentObject.uuid !== rootObj.uuid) {
@@ -204,19 +224,50 @@ function renderSubTree(parentObject) {
 
     parentObject.children.forEach(childObject => {
         const childElement = renderNode(childObject);
-        console.log(element)
-        console.log(element.className)
         if (element.className === 'mainNode') {
             element.appendChild(childElement);
         } else {
             element.parentElement.appendChild(childElement);
         }
-
-        if (childObject.children.length > 0) {
-            renderSubTree(childObject);
+        if (childObject.children) {
+            renderTreeToDom(childObject);
         }
     })
 }
 
 
-renderSubTree(rootObj);
+newTaskBtn.addEventListener('click', (event) => {
+    const newNode = createNodeObject('')
+    insertNodeObject(newNode)
+
+    const newDomNode = renderNode(newNode)
+    mainNode.appendChild(newDomNode)
+
+    moveFocusTo(newNode.uuid)
+})
+
+
+
+
+// Initial Test nodes
+const firstObj = createNodeObject('A life well lived')
+insertNodeObject(firstObj)
+
+const secondObj = createNodeObject('Help others live a better life')
+insertNodeObject(secondObj, firstObj)
+
+const fourthObj = createNodeObject('Leave the world better than you found it')
+insertNodeObject(fourthObj, secondObj)
+
+const thirdObj = createNodeObject('The next step if for you to figure out')
+insertNodeObject(thirdObj, firstObj)
+
+const fifthObj = createNodeObject('Go ahead and make your own plan')
+insertNodeObject(fifthObj, firstObj)
+
+const sixthObj = createNodeObject('')
+insertNodeObject(sixthObj)
+
+
+// Render full tree
+renderTreeToDom(rootObj);

@@ -42,18 +42,44 @@ function distanceToRoot(nodeObject) {
     return distance
 }
 
-function insertNodeObject(nodeObject, parent = rootObj, index = parent.children.length) {
-    nodeObject.parent = parent
-    nodeObject.indentationLevel = distanceToRoot(nodeObject)
-    parent.children.splice(index, 0, nodeObject)
+function insertNodeObject(node, parent = rootObj, index = parent.children.length) {
+    if (node.parent) { node.parent.children.splice(findNodeIndex(node), 1) }
+    node.parent = parent
+    node.indentationLevel = distanceToRoot(node)
+    parent.children.splice(index, 0, node)
 }
 
+const findNodeIndex = (node) => node.parent.children.indexOf(node)
 
-function findNodeIndex(node) {
-    for (let i = 0; i < node.parent.children.length; i++) {
-        if (node.parent.children[i].uuid === node.uuid) {
-            return i
+function updateNodeAndChildrenIndentLvl(parentNode) {
+    for (const child of parentNode.children) {
+        child.indentationLevel = distanceToRoot(child)
+        if (child.children) {
+            updateNodeAndChildrenIndentLvl(child)
         }
+    }
+}
+
+function unIndentNode(node) {
+    // if (node.parent.uuid !== rootObj.uuid) {
+    //     const newParent = node.parent.parent
+    //     const parentIndexInGrandparent = findNodeIndex(node.parent)
+    //     insertNodeObject(node, newParent, parentIndexInGrandparent + 1)
+    //     updateNodeAndChildrenIndentLvl(node)
+    // }
+    if (node.parent !== undefined && node.parent.parent !== undefined) {
+        const newParent = node.parent.parent;
+        const parentIndexInGrandparent = findNodeIndex(node.parent);
+        insertNodeObject(node, newParent, parentIndexInGrandparent + 1);
+        updateNodeAndChildrenIndentLvl(node);
+    }
+}
+
+function indentNode(node) {
+    if (findNodeIndex(node) != 0) {
+        const prevSibling = node.parent.children[findNodeIndex(node) - 1]
+        insertNodeObject(node, prevSibling)
+        updateNodeAndChildrenIndentLvl(node)
     }
 }
 
@@ -61,6 +87,7 @@ function findNodeIndex(node) {
 // DOM References
 const mainNodeWrapper = document.getElementById("mainNodeWrapper");
 const newTaskBtn = document.getElementById('newTaskBtn');
+
 
 // DOM Elements
 const collapsedClass = "navCollapsed";
@@ -103,10 +130,11 @@ function renderNode(node) {
     const formElement = document.createElement('form');
     formElement.classList.add('nodeForm');
     formElement.dataset.uuid = node.uuid
-
+    formElement.addEventListener('keydown', function (event) { moveFocus(event) })
+    formElement.addEventListener('keydown', function (event) { indentDomNode(event) })
+    formElement.addEventListener('keydown', function (event) { moveDomNode(event) })
     formElement.addEventListener('submit', function (event) {
         event.preventDefault();
-
         // Insert New Obj Node in Data Tree
         const newNode = createNodeObject('')
         insertNodeObject(newNode, node.parent, findNodeIndex(node) + 1)
@@ -117,11 +145,6 @@ function renderNode(node) {
         appendDomNodeBeforeNextSibling(currentDomNode, newDomNode)
         moveFocusTo(newNode.uuid)
     })
-
-    formElement.addEventListener('keydown', function (event) {
-        moveFocusUpDown(event)
-    })
-
     nodeContainerElement.appendChild(formElement);
 
     const inputElement = document.createElement('input');
@@ -129,7 +152,6 @@ function renderNode(node) {
     inputElement.classList.add(`title`);
     inputElement.placeholder = 'Add title..';
     inputElement.value = node.title;
-    // inputElement.dataset.uuid = node.uuid
     inputElement.addEventListener('input', (event) => {
         node.title = event.target.value
     })
@@ -170,13 +192,19 @@ function moveFocusTo(uuid) {
     inputField.focus()
 }
 
-function moveFocusUpDown(event) {
+function moveDomNode(event) {
+    const inputField = event.target
+
+
+}
+
+function moveFocus(event) {
     const inputField = event.target;
     const currentDomNode = inputField.closest('.node');
     const previousDomNode = currentDomNode.previousElementSibling;
     const nextDomNode = currentDomNode.nextElementSibling;
 
-    if (event.keyCode === 40) { // Down arrow key
+    if (event.key === "ArrowDown") { // Down arrow key
         event.preventDefault();
         if (nextDomNode) {
             const nextInputField = nextDomNode.querySelector('.title');
@@ -185,7 +213,7 @@ function moveFocusUpDown(event) {
             }
         }
     }
-    if (event.keyCode === 38) { // Up arrow key
+    if (event.key === "ArrowUp" && !event.commandkey) { // Up arrow key
         event.preventDefault();
         if (previousDomNode) {
             const previousInputField = previousDomNode.querySelector('.title');
@@ -195,6 +223,51 @@ function moveFocusUpDown(event) {
         }
     }
 }
+
+
+function indentDomNode(event) {
+    const inputField = event.target;
+    const currentDomNode = inputField.closest('.node');
+    const currentIndentLevel = currentDomNode.getAttribute('data-indentlvl')
+    const currentUuid = currentDomNode.getAttribute('id')
+    const objNode = findNodeByUuid(currentUuid)
+
+    if (event.key === "Tab" && !event.shiftKey && currentIndentLevel > 0) { // Down arrow key
+        event.preventDefault();
+        indentNode(objNode);
+        clearDomTree();
+        renderTree(rootObj);
+        moveFocusTo(currentUuid)
+    }
+
+    if (event.key === "Tab" && event.shiftKey && currentIndentLevel > 1) { // Down arrow key
+        event.preventDefault();
+        unIndentNode(objNode)
+        clearDomTree()
+        renderTree(rootObj);
+        moveFocusTo(currentUuid)
+    }
+}
+
+function clearDomTree() {
+    while (mainNode.firstChild) {
+        mainNode.removeChild(mainNode.firstChild)
+    }
+}
+
+function findNodeByUuid(uuid, node = rootObj) {
+    if (node.uuid === uuid) return node;
+
+    for (const child of node.children) {
+        const foundNode = findNodeByUuid(uuid, child);
+        if (foundNode) {
+            return foundNode;
+        }
+    }
+
+    return null;
+}
+
 
 function appendDomNodeBeforeNextSibling(currentDomNode, newDomNode) {
     const currentIndentLevel = currentDomNode.getAttribute('data-indentlvl')
@@ -213,7 +286,9 @@ function appendDomNodeBeforeNextSibling(currentDomNode, newDomNode) {
     }
 }
 
-function renderTreeToDom(parentObject) {
+
+
+function renderTree(parentObject) {
     let element
 
     if (parentObject.uuid !== rootObj.uuid) {
@@ -230,7 +305,7 @@ function renderTreeToDom(parentObject) {
             element.parentElement.appendChild(childElement);
         }
         if (childObject.children) {
-            renderTreeToDom(childObject);
+            renderTree(childObject);
         }
     })
 }
@@ -256,18 +331,18 @@ insertNodeObject(firstObj)
 const secondObj = createNodeObject('Help others live a better life')
 insertNodeObject(secondObj, firstObj)
 
-const fourthObj = createNodeObject('Leave the world better than you found it')
-insertNodeObject(fourthObj, secondObj)
+const thirdObj = createNodeObject('Leave the world better than you found it')
+insertNodeObject(thirdObj, secondObj)
 
-const thirdObj = createNodeObject('The next step if for you to figure out')
-insertNodeObject(thirdObj, firstObj)
+const fourthObj = createNodeObject('The next step if for you to figure out')
+insertNodeObject(fourthObj, thirdObj)
 
-const fifthObj = createNodeObject('Go ahead and make your own plan')
-insertNodeObject(fifthObj, firstObj)
+const fifthObj = createNodeObject('Go ahead and make your plan')
+insertNodeObject(fifthObj, thirdObj)
 
 const sixthObj = createNodeObject('')
 insertNodeObject(sixthObj)
 
 
 // Render full tree
-renderTreeToDom(rootObj);
+renderTree(rootObj);

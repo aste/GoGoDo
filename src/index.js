@@ -193,8 +193,31 @@ function moveFocusTo(uuid) {
 }
 
 function moveDomNode(event) {
+    const isMacOS = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
     const inputField = event.target
+    const currentDomNodeID = inputField.closest('.node').id;
+    const currentNode = findNodeByUuid(currentDomNodeID)
+    const currentNodeIndex = findNodeIndex(currentNode)
+    const siblingLength = currentNode.parent.children.length
 
+    if (event.key === "ArrowDown" && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey))) {
+        if (siblingLength > currentNodeIndex + 1) {
+            insertNodeObject(currentNode, currentNode.parent, currentNodeIndex + 1)
+            clearDomTree();
+            renderTree(rootObj);
+            moveFocusTo(currentDomNodeID)
+        }
+        
+    }
+    if (event.key === "ArrowUp" && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey))) {
+        if (currentNodeIndex > 0) {
+            insertNodeObject(currentNode, currentNode.parent, currentNodeIndex - 1)
+            clearDomTree();
+            renderTree(rootObj);
+            moveFocusTo(currentDomNodeID)
+        }
+        
+    }
 
 }
 
@@ -204,7 +227,7 @@ function moveFocus(event) {
     const previousDomNode = currentDomNode.previousElementSibling;
     const nextDomNode = currentDomNode.nextElementSibling;
 
-    if (event.key === "ArrowDown") { // Down arrow key
+    if (event.key === "ArrowDown" && !(event.metaKey || event.ctrlKey)) { // Down arrow key
         event.preventDefault();
         if (nextDomNode) {
             const nextInputField = nextDomNode.querySelector('.title');
@@ -213,7 +236,7 @@ function moveFocus(event) {
             }
         }
     }
-    if (event.key === "ArrowUp" && !event.commandkey) { // Up arrow key
+    if (event.key === "ArrowUp" && !(event.metaKey || event.ctrlKey)) { // Up arrow key
         event.preventDefault();
         if (previousDomNode) {
             const previousInputField = previousDomNode.querySelector('.title');
@@ -268,7 +291,6 @@ function findNodeByUuid(uuid, node = rootObj) {
     return null;
 }
 
-
 function appendDomNodeBeforeNextSibling(currentDomNode, newDomNode) {
     const currentIndentLevel = currentDomNode.getAttribute('data-indentlvl')
     let nextSiblingFound = false
@@ -285,8 +307,6 @@ function appendDomNodeBeforeNextSibling(currentDomNode, newDomNode) {
         currentDomNode.after(newDomNode)
     }
 }
-
-
 
 function renderTree(parentObject) {
     let element
@@ -309,7 +329,6 @@ function renderTree(parentObject) {
         }
     })
 }
-
 
 newTaskBtn.addEventListener('click', (event) => {
     const newNode = createNodeObject('')

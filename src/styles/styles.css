@@ -348,3 +348,11 @@ body,
 #mainNodeWrapper {
   box-shadow: var(--box-shadow);
 }
+
+.node.completed {
+  opacity: 0.5;
+}
+
+.node.completed .title {
+  text-decoration: line-through;
+}

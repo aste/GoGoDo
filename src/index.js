@@ -70,6 +70,10 @@ function toggleComplete(node, parentComplete = null) {
     node.children.forEach(child => toggleComplete(child, node.complete));
 }
 
+function deleteNode(node) {
+    node.parent.children.splice(findNodeIndex(node), 1)
+}
+
 function unIndentNode(node) {
     if (node.parent !== undefined && node.parent.parent !== undefined) {
         const newParent = node.parent.parent;
@@ -138,6 +142,7 @@ function renderNode(node) {
     formElement.addEventListener('keydown', function (event) { indentDomNode(event) })
     formElement.addEventListener('keydown', function (event) { moveDomNode(event) })
     formElement.addEventListener('keydown', function (event) { toggleCompleteDomNode(event) })
+    formElement.addEventListener('keydown', function (event) { deleteDomNode(event) })
     formElement.addEventListener('submit', function (event) {
         event.preventDefault();
         // Insert New Obj Node in Data Tree
@@ -191,6 +196,20 @@ function renderNode(node) {
     return nodeElement;
 }
 
+function deleteDomNode(event) {
+    const isMacOS = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+    const inputField = event.target;
+    const currentDomNode = inputField.closest('.node');
+    const currentUuid = currentDomNode.getAttribute('id')
+    const objNode = findNodeByUuid(currentUuid)
+    if (event.key === "Backspace" && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey))) {
+        event.preventDefault
+        deleteNode(objNode)
+        clearDomTree();
+        renderTree(rootObj);
+    }
+}
+
 function toggleCompleteDomNode(event) {
     const isMacOS = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
     const inputField = event.target;
@@ -204,7 +223,6 @@ function toggleCompleteDomNode(event) {
         clearDomTree();
         renderTree(rootObj);
     }
-    // console.log('test')
 }
 
 function moveDomNode(event) {
@@ -214,7 +232,7 @@ function moveDomNode(event) {
     const currentNode = findNodeByUuid(currentDomNodeID)
     const currentNodeIndex = findNodeIndex(currentNode)
     const siblingLength = currentNode.parent.children.length
-    
+
     if (event.key === "ArrowDown" && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey))) {
         if (siblingLength > currentNodeIndex + 1) {
             insertNodeObject(currentNode, currentNode.parent, currentNodeIndex + 1)
@@ -222,7 +240,7 @@ function moveDomNode(event) {
             renderTree(rootObj);
             moveFocusTo(currentDomNodeID)
         }
-        
+
     }
     if (event.key === "ArrowUp" && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey))) {
         if (currentNodeIndex > 0) {
@@ -231,9 +249,9 @@ function moveDomNode(event) {
             renderTree(rootObj);
             moveFocusTo(currentDomNodeID)
         }
-        
+
     }
-    
+
 }
 
 function moveFocusTo(uuid) {

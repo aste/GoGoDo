@@ -30,6 +30,7 @@ function createNodeObject(title) {
         projectManager: "You",
         collapseNode: false,
         complete: false,
+        hidden: false,
         children: [],
         parent: undefined,
         indentationLevel: 0,
@@ -69,6 +70,18 @@ function toggleComplete(node, parentComplete = null) {
 
     node.children.forEach(child => toggleComplete(child, node.complete));
 }
+
+function hide(node, applyToParent = false) {
+    if (applyToParent) { node.hidden = true }
+    node.children.forEach(child => hide(child, true));
+}
+
+function show(node, applyToParent = false) {
+    if (applyToParent) { node.hidden = false }
+    node.children.forEach(child => show(child, true));
+}
+
+
 
 function deleteNode(node) {
     node.parent.children.splice(findNodeIndex(node), 1)
@@ -122,10 +135,12 @@ function renderNode(node) {
     nodeElement.id = node.uuid;
     nodeElement.classList.add('node');
     nodeElement.classList.toggle('completed', node.complete);
+    nodeElement.classList.toggle('hidden', node.hidden);
     nodeElement.dataset.indentlvl = node.indentationLevel
 
     const triangleElement = document.createElement('div');
-    triangleElement.classList.add('triangleRight');
+    triangleElement.classList.add('triangle');
+    triangleElement.classList.add('triangleDown');
     triangleElement.style.setProperty('grid-column-start', `${node.indentationLevel}`)
     triangleElement.style.setProperty('grid-column-end', `${node.indentationLevel + 1}`)
     nodeElement.appendChild(triangleElement);
@@ -143,6 +158,7 @@ function renderNode(node) {
     formElement.addEventListener('keydown', function (event) { moveDomNode(event) })
     formElement.addEventListener('keydown', function (event) { toggleCompleteDomNode(event) })
     formElement.addEventListener('keydown', function (event) { deleteDomNode(event) })
+    formElement.addEventListener('keydown', function (event) { collapseExpandDomNode(event) })
     formElement.addEventListener('submit', function (event) {
         event.preventDefault();
         // Insert New Obj Node in Data Tree
@@ -196,17 +212,45 @@ function renderNode(node) {
     return nodeElement;
 }
 
-function deleteDomNode(event) {
+function collapseExpandDomNode(event) {
     const isMacOS = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
     const inputField = event.target;
     const currentDomNode = inputField.closest('.node');
     const currentUuid = currentDomNode.getAttribute('id')
     const objNode = findNodeByUuid(currentUuid)
-    if (event.key === "Backspace" && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey))) {
+
+    if (event.key === "ArrowUp" && event.shiftKey && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey))) {
         event.preventDefault
-        deleteNode(objNode)
+        hide(objNode)
         clearDomTree();
         renderTree(rootObj);
+        moveFocusTo(currentUuid)
+    }
+
+    if (event.key === "ArrowDown" && event.shiftKey && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey))) {
+        event.preventDefault
+        show(objNode)
+        clearDomTree();
+        renderTree(rootObj);
+        moveFocusTo(currentUuid)
+    }
+
+    if (event.key === "Enter") {console.log('enter')}
+
+}
+
+function deleteDomNode(event) {
+    const isMacOS = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+    const inputField = event.target;
+    const currentTriangle = inputField.closest('.triangle');
+    const currentDomNode = inputField.closest('.node');
+    const currentUuid = currentDomNode.getAttribute('id')
+    const objNode = findNodeByUuid(currentUuid)
+    if (event.key === "Backspace" && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey))) {
+        event.preventDefault
+        currentTriangle.toggle('triangleDown')
+        currentTriangle.toggle('triangleRight')
+        console.log('helloe hey hi')
     }
 }
 
@@ -233,7 +277,7 @@ function moveDomNode(event) {
     const currentNodeIndex = findNodeIndex(currentNode)
     const siblingLength = currentNode.parent.children.length
 
-    if (event.key === "ArrowDown" && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey))) {
+    if (event.key === "ArrowDown" && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey)) && !event.shiftKey) {
         if (siblingLength > currentNodeIndex + 1) {
             insertNodeObject(currentNode, currentNode.parent, currentNodeIndex + 1)
             clearDomTree();
@@ -242,7 +286,7 @@ function moveDomNode(event) {
         }
 
     }
-    if (event.key === "ArrowUp" && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey))) {
+    if (event.key === "ArrowUp" && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey)) && !event.shiftKey) {
         if (currentNodeIndex > 0) {
             insertNodeObject(currentNode, currentNode.parent, currentNodeIndex - 1)
             clearDomTree();
@@ -370,6 +414,7 @@ newTaskBtn.addEventListener('click', (event) => {
     mainNode.appendChild(newDomNode)
 
     moveFocusTo(newNode.uuid)
+    console.log(rootObj)
 })
 
 

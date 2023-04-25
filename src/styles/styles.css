@@ -161,10 +161,12 @@ body,
 
 .triangleRight {
   border-width: 0.3rem 0 0.3rem 0.48em;
+  border-color: transparent transparent transparent var(--dark-grey);
 }
 
 .triangleDown {
   border-width: 0.48em 0.3rem 0 0.3rem;
+  border-color: var(--dark-grey) transparent transparent transparent;
 }
 
 .triangleDown,
@@ -172,7 +174,6 @@ body,
   grid-column: 0 / 1;
   margin-left: 0.8rem;
   border-style: solid;
-  border-color: transparent transparent transparent var(--dark-grey);
 }
 
 .title {
@@ -355,4 +356,8 @@ body,
 
 .node.completed .title {
   text-decoration: line-through;
+}
+
+.node.hidden {
+  display: none;
 }

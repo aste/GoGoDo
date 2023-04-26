@@ -31,6 +31,7 @@ function createNodeObject(title) {
         collapseNode: false,
         complete: false,
         hidden: false,
+        childrenShown: true,
         children: [],
         parent: undefined,
         indentationLevel: 0,
@@ -72,12 +73,22 @@ function toggleComplete(node, parentComplete = null) {
 }
 
 function hide(node, applyToParent = false) {
-    if (applyToParent) { node.hidden = true }
+    if (applyToParent) {
+        console.log(node)
+        node.hidden = true
+    } else {
+        node.childrenShown = false
+    }
     node.children.forEach(child => hide(child, true));
 }
 
 function show(node, applyToParent = false) {
-    if (applyToParent) { node.hidden = false }
+    if (applyToParent) {
+        console.log(node)
+        node.hidden = false
+    } else {
+        node.childrenShown = true
+    }
     node.children.forEach(child => show(child, true));
 }
 
@@ -130,7 +141,7 @@ mainNodeWrapper.insertBefore(mainNode, newTaskBtn)
 
 // DOM Manipulation
 function renderNode(node) {
-    // if (node.title === 'rootObj') { return }
+
     const nodeElement = document.createElement('div');
     nodeElement.id = node.uuid;
     nodeElement.classList.add('node');
@@ -140,7 +151,7 @@ function renderNode(node) {
 
     const triangleElement = document.createElement('div');
     triangleElement.classList.add('triangle');
-    triangleElement.classList.add('triangleDown');
+    triangleElement.classList.toggle('triangleDown', node.childrenShown);
     triangleElement.style.setProperty('grid-column-start', `${node.indentationLevel}`)
     triangleElement.style.setProperty('grid-column-end', `${node.indentationLevel + 1}`)
     nodeElement.appendChild(triangleElement);
@@ -235,7 +246,7 @@ function collapseExpandDomNode(event) {
         moveFocusTo(currentUuid)
     }
 
-    if (event.key === "Enter") {console.log('enter')}
+    if (event.key === "Enter") { console.log('enter') }
 
 }
 
@@ -247,10 +258,10 @@ function deleteDomNode(event) {
     const currentUuid = currentDomNode.getAttribute('id')
     const objNode = findNodeByUuid(currentUuid)
     if (event.key === "Backspace" && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey))) {
-        event.preventDefault
-        currentTriangle.toggle('triangleDown')
-        currentTriangle.toggle('triangleRight')
-        console.log('helloe hey hi')
+        event.preventDefault()
+        deleteNode(objNode)
+        clearDomTree();
+        renderTree(rootObj);
     }
 }
 
@@ -307,25 +318,39 @@ function moveFocusTo(uuid) {
 function moveFocus(event) {
     const inputField = event.target;
     const currentDomNode = inputField.closest('.node');
-    const previousDomNode = currentDomNode.previousElementSibling;
-    const nextDomNode = currentDomNode.nextElementSibling;
+    const previousDomNode = () => {
+        let previousElementSibling = currentDomNode.previousElementSibling
+
+        while (previousElementSibling && previousElementSibling.classList.contains('hidden')) {
+            previousElementSibling = previousElementSibling.previousElementSibling;
+        }
+
+        return previousElementSibling
+    }
+
+    const nextDomNode = () => {
+        let nextElementSibling = currentDomNode.nextElementSibling
+
+        while (nextElementSibling && nextElementSibling.classList.contains('hidden')) {
+            nextElementSibling = nextElementSibling.nextElementSibling;
+        }
+
+        return nextElementSibling
+    }
+    // const nextDomNode = currentDomNode.nextElementSibling;
 
     if (event.key === "ArrowDown" && !(event.metaKey || event.ctrlKey)) { // Down arrow key
         event.preventDefault();
-        if (nextDomNode) {
-            const nextInputField = nextDomNode.querySelector('.title');
-            if (nextInputField) {
-                nextInputField.focus();
-            }
+        if (nextDomNode()) {
+            const nextInputField = nextDomNode().querySelector('.title');
+            nextInputField.focus();
         }
     }
     if (event.key === "ArrowUp" && !(event.metaKey || event.ctrlKey)) { // Up arrow key
         event.preventDefault();
-        if (previousDomNode) {
-            const previousInputField = previousDomNode.querySelector('.title');
-            if (previousInputField) {
-                previousInputField.focus();
-            }
+        if (previousDomNode()) {
+            const previousInputField = previousDomNode().querySelector('.title');
+            previousInputField.focus()
         }
     }
 }
@@ -373,6 +398,22 @@ function findNodeByUuid(uuid, node = rootObj) {
     return null;
 }
 
+function findLastDescendant(domNode) {
+    let lastDescendant = domNode;
+    const currentIndentLevel = parseInt(domNode.getAttribute('data-indentlvl'));
+
+    for (let sibling = domNode.nextElementSibling; sibling; sibling = sibling.nextElementSibling) {
+        const siblingIndentLevel = parseInt(sibling.getAttribute('data-indentlvl'));
+
+        if (siblingIndentLevel <= currentIndentLevel) {
+            break;
+        }
+        lastDescendant = sibling;
+    }
+
+    return lastDescendant;
+}
+
 function appendDomNodeBeforeNextSibling(currentDomNode, newDomNode) {
     const currentIndentLevel = currentDomNode.getAttribute('data-indentlvl')
     let nextSiblingFound = false
@@ -386,7 +427,8 @@ function appendDomNodeBeforeNextSibling(currentDomNode, newDomNode) {
     }
 
     if (!nextSiblingFound) {
-        currentDomNode.after(newDomNode)
+        const lastDescendant = findLastDescendant(currentDomNode)
+        lastDescendant.after(newDomNode)
     }
 }
 
@@ -395,11 +437,13 @@ function renderTree(parentObject) {
 
     parentObject.children.forEach(childObject => {
         const childElement = renderNode(childObject);
+
         if (element.className === 'mainNode') {
             element.appendChild(childElement);
         } else {
             element.parentElement.appendChild(childElement);
         }
+
         if (childObject.children) {
             renderTree(childObject);
         }

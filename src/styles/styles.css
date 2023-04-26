@@ -159,7 +159,7 @@ body,
   font-size: 1rem;
 }
 
-.triangleRight {
+.triangle {
   border-width: 0.3rem 0 0.3rem 0.48em;
   border-color: transparent transparent transparent var(--dark-grey);
 }
@@ -170,7 +170,7 @@ body,
 }
 
 .triangleDown,
-.triangleRight {
+.triangle {
   grid-column: 0 / 1;
   margin-left: 0.8rem;
   border-style: solid;

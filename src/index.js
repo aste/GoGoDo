@@ -182,6 +182,7 @@ function renderNode(node) {
         appendDomNodeBeforeNextSibling(currentDomNode, newDomNode)
         moveFocusTo(newNode.uuid)
     })
+
     nodeContainerElement.appendChild(formElement);
 
     const inputElement = document.createElement('input');
@@ -198,12 +199,20 @@ function renderNode(node) {
     nodeMenuElement.classList.add('nodeMenu');
     nodeContainerElement.appendChild(nodeMenuElement);
 
-    const dueDateBtn = document.createElement('button');
-    dueDateBtn.classList.add('nodeBtn', 'dueDate');
-    dueDateBtn.title = `Due ${dateFns.format(node.dueDate, 'MMMM do yyyy')}`;
-    dueDateBtn.textContent = dateFns.format(node.dueDate, 'do MMM');
-    nodeMenuElement.appendChild(dueDateBtn);
+    const dueDateInput = document.createElement('input');
+    dueDateInput.type = 'date';
+    dueDateInput.classList.add('dueDateInput');
+    dueDateInput.value = dateFns.format(node.dueDate, 'yyyy-MM-dd');
+    dueDateInput.title = `Due ${dateFns.format(node.dueDate, 'MMMM do yyyy')}`;
+    dueDateInput.textContent = dateFns.format(node.dueDate, 'do MMM');
+    
+    dueDateInput.addEventListener('change', (event) => {
+        let selectedDate = new Date(event.target.value);
+        node.dueDate = selectedDate;
+    });
 
+    nodeMenuElement.appendChild(dueDateInput);
+    
     const priorityBtn = document.createElement('button');
     priorityBtn.classList.add('nodeBtn', 'nodePriority');
     priorityBtn.title = 'High Priority';
@@ -318,26 +327,22 @@ function moveFocusTo(uuid) {
 function moveFocus(event) {
     const inputField = event.target;
     const currentDomNode = inputField.closest('.node');
+
     const previousDomNode = () => {
         let previousElementSibling = currentDomNode.previousElementSibling
-
         while (previousElementSibling && previousElementSibling.classList.contains('hidden')) {
             previousElementSibling = previousElementSibling.previousElementSibling;
         }
-
         return previousElementSibling
     }
 
     const nextDomNode = () => {
         let nextElementSibling = currentDomNode.nextElementSibling
-
         while (nextElementSibling && nextElementSibling.classList.contains('hidden')) {
             nextElementSibling = nextElementSibling.nextElementSibling;
         }
-
         return nextElementSibling
     }
-    // const nextDomNode = currentDomNode.nextElementSibling;
 
     if (event.key === "ArrowDown" && !(event.metaKey || event.ctrlKey)) { // Down arrow key
         event.preventDefault();
@@ -346,6 +351,7 @@ function moveFocus(event) {
             nextInputField.focus();
         }
     }
+
     if (event.key === "ArrowUp" && !(event.metaKey || event.ctrlKey)) { // Up arrow key
         event.preventDefault();
         if (previousDomNode()) {

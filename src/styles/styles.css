@@ -198,11 +198,12 @@ body,
   background-color: var(--l1);
 }
 
+.dueDateInput,
 .nodeBtn {
   text-align: center;
   margin: 0;
   padding: 0 0.25rem 0 0.25rem;
-  height: 1rem;
+  min-width: 1rem;
   font-size: 0.75rem;
   border: none;
   color: var(--grey);
@@ -212,13 +213,9 @@ body,
   margin-left: var(--node-margin);
 }
 
-.dueDate {
-  min-width: 1rem;
-}
-
 .nodePriority,
 .nodeOwner {
-  width: 1rem;
+  min-width: 1rem;
 }
 
 .nodeOwner {
@@ -295,6 +292,7 @@ body,
   margin-top: 0.25rem;
 }
 
+.dueDateInput:hover,
 .nodeBtn:hover,
 .navBorder:hover {
   cursor: pointer;
@@ -360,4 +358,14 @@ body,
 
 .node.hidden {
   display: none;
+}
+
+.dueDateInput {
+  border: var(--light-background);
+  background-color: var(--very-light-background);
+  min-width: 6rem;
+}
+
+::-webkit-calendar-picker-indicator {
+  filter: invert(77%) sepia(19%) saturate(305%) hue-rotate(175deg) brightness(81%) contrast(89%);
 }

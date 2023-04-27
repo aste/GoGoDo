@@ -159,20 +159,21 @@ body,
   font-size: 1rem;
 }
 
-.triangleRight {
+.triangle {
   border-width: 0.3rem 0 0.3rem 0.48em;
+  border-color: transparent transparent transparent var(--dark-grey);
 }
 
 .triangleDown {
   border-width: 0.48em 0.3rem 0 0.3rem;
+  border-color: var(--dark-grey) transparent transparent transparent;
 }
 
 .triangleDown,
-.triangleRight {
-  grid-column: 1 / 2;
+.triangle {
+  grid-column: 0 / 1;
   margin-left: 0.8rem;
   border-style: solid;
-  border-color: transparent transparent transparent var(--dark-grey);
 }
 
 .title {
@@ -183,7 +184,8 @@ body,
 .nodeContainer {
   display: flex;
   flex-direction: row;
-  grid-column: 2 / 37;
+  /* grid-column: 2 / 37; */
+  grid-column-end: 37;
   margin: var(--node-margin) 0 var(--node-margin) 0;
   color: var(--grey);
   justify-content: space-between;
@@ -196,11 +198,12 @@ body,
   background-color: var(--l1);
 }
 
+.dueDateInput,
 .nodeBtn {
   text-align: center;
   margin: 0;
   padding: 0 0.25rem 0 0.25rem;
-  height: 1rem;
+  min-width: 1rem;
   font-size: 0.75rem;
   border: none;
   color: var(--grey);
@@ -210,15 +213,6 @@ body,
   margin-left: var(--node-margin);
 }
 
-.dueDate {
-  min-width: 1rem;
-}
-
-.nodePriority,
-.nodeOwner {
-  width: 1rem;
-}
-
 .nodeOwner {
   padding: 0;
   border: none;
@@ -226,7 +220,6 @@ body,
 
 #newTaskBtn {
   margin-top: auto;
-  margin-bottom: 2.75rem;
   align-self: flex-end;
   width: 4rem;
   outline: none;
@@ -237,7 +230,6 @@ body,
 }
 
 /* Navigation Bar */
-
 .nav {
   display: flex;
   width: var(--nav-width);
@@ -256,6 +248,7 @@ body,
   flex: 1;
   padding: 0;
   margin: 0;
+  margin-top: 0.75rem;
   padding-left: 0.25rem;
   overflow-y: auto;
 }
@@ -293,6 +286,7 @@ body,
   margin-top: 0.25rem;
 }
 
+.dueDateInput:hover,
 .nodeBtn:hover,
 .navBorder:hover {
   cursor: pointer;
@@ -339,11 +333,43 @@ body,
   display: flex;
   justify-content: right;
   margin: var(--node-margin);
-  width: 18rem;
+  width: 8rem;
 }
 
 .nodeContainer,
 .bar,
 #mainNodeWrapper {
   box-shadow: var(--box-shadow);
+}
+
+.node.completed {
+  opacity: 0.5;
+}
+
+.node.completed .title {
+  text-decoration: line-through;
+}
+
+.node.hidden {
+  display: none;
+}
+
+.dueDateInput {
+  border: var(--light-background);
+  background-color: var(--very-light-background);
+  cursor: pointer;
+  min-width: 6rem;
+}
+
+::-webkit-calendar-picker-indicator {
+  filter: invert(77%) sepia(19%) saturate(305%) hue-rotate(175deg) brightness(81%) contrast(89%);
+  cursor: pointer;
+}
+
+
+.nodeManager,
+.nodePriority {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  color: var(--light-grey);
 }

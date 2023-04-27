@@ -26,8 +26,8 @@ function createNodeObject(title) {
         title: title,
         uuid: uuid(),
         dueDate: dateFns.addDays(dateFns.addHours(dateFns.startOfDay(new Date()), 18), 7),
-        priorityLevel: "H",
-        projectManager: "You",
+        priorityLevel: "N",
+        projectManager: "You are the manager",
         collapseNode: false,
         complete: false,
         hidden: false,
@@ -74,7 +74,6 @@ function toggleComplete(node, parentComplete = null) {
 
 function hide(node, applyToParent = false) {
     if (applyToParent) {
-        console.log(node)
         node.hidden = true
     } else {
         node.childrenShown = false
@@ -84,7 +83,6 @@ function hide(node, applyToParent = false) {
 
 function show(node, applyToParent = false) {
     if (applyToParent) {
-        console.log(node)
         node.hidden = false
     } else {
         node.childrenShown = true
@@ -205,29 +203,63 @@ function renderNode(node) {
     dueDateInput.value = dateFns.format(node.dueDate, 'yyyy-MM-dd');
     dueDateInput.title = `Due ${dateFns.format(node.dueDate, 'MMMM do yyyy')}`;
     dueDateInput.textContent = dateFns.format(node.dueDate, 'do MMM');
-    
+
     dueDateInput.addEventListener('change', (event) => {
         let selectedDate = new Date(event.target.value);
         node.dueDate = selectedDate;
     });
 
     nodeMenuElement.appendChild(dueDateInput);
+
+
+    const prioritySelect = document.createElement('select');
+    prioritySelect.classList.add('nodeBtn', 'nodePriority');
+
+    const priorities = [
+        { value: 'No', label: 'No Priority' },
+        { value: 'Low', label: 'Low Priority' },
+        { value: 'Medium', label: 'Medium Priority' },
+        { value: 'High', label: 'High Priority' },
+    ];
+
+    priorities.forEach((priority) => {
+        const priorityOption = document.createElement('option');
+        priorityOption.value = priority.value;
+        priorityOption.textContent = priority.label;
+        priorityOption.selected = priority.value === node.priorityLevel;
+        prioritySelect.appendChild(priorityOption);
+    });
+
+    prioritySelect.addEventListener('change', (event) => {
+        node.priorityLevel = event.target.value;
+    });
+
+    nodeMenuElement.appendChild(prioritySelect);
+
+
+    const managerSelect = document.createElement('select');
+    managerSelect.classList.add('nodeBtn', 'nodeManager');
     
-    const priorityBtn = document.createElement('button');
-    priorityBtn.classList.add('nodeBtn', 'nodePriority');
-    priorityBtn.title = 'High Priority';
-    priorityBtn.textContent = node.priorityLevel;
-    nodeMenuElement.appendChild(priorityBtn);
-
-    const ownerBtn = document.createElement('button');
-    ownerBtn.classList.add('nodeBtn', 'nodeOwner');
-    ownerBtn.title = 'You are the manager';
-
-    const ownerImg = document.createElement('img');
-    ownerImg.src = './anonProfileIconGrey.svg';
-    ownerImg.alt = 'Profile Icon';
-    ownerBtn.appendChild(ownerImg);
-    nodeMenuElement.appendChild(ownerBtn);
+    const managers = [
+        { value: 'You', label: 'You are the project manager' },
+        { value: 'Michael', label: 'Ada Lovelace is the project manager' },
+        { value: 'Pam', label: 'Guido van Rossum is the project manager' },
+        { value: 'Dwight', label: 'Linus Torvalds is the project manager' },
+    ];
+    
+    managers.forEach((manager) => {
+        const managerOption = document.createElement('option');
+        managerOption.value = manager.value;
+        managerOption.textContent = manager.label;
+        managerOption.selected = manager.value === node.manager;
+        managerSelect.appendChild(managerOption);
+    });
+    
+    managerSelect.addEventListener('change', (event) => {
+        node.manager = event.target.value;
+    });
+    
+    nodeMenuElement.appendChild(managerSelect);
 
     return nodeElement;
 }
@@ -254,8 +286,6 @@ function collapseExpandDomNode(event) {
         renderTree(rootObj);
         moveFocusTo(currentUuid)
     }
-
-    if (event.key === "Enter") { console.log('enter') }
 
 }
 
@@ -286,6 +316,7 @@ function toggleCompleteDomNode(event) {
         toggleComplete(objNode)
         clearDomTree();
         renderTree(rootObj);
+        moveFocusTo(currentUuid)
     }
 }
 

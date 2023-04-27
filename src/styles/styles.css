@@ -213,11 +213,6 @@ body,
   margin-left: var(--node-margin);
 }
 
-.nodePriority,
-.nodeOwner {
-  min-width: 1rem;
-}
-
 .nodeOwner {
   padding: 0;
   border: none;
@@ -225,7 +220,6 @@ body,
 
 #newTaskBtn {
   margin-top: auto;
-  margin-bottom: 2.75rem;
   align-self: flex-end;
   width: 4rem;
   outline: none;
@@ -363,9 +357,19 @@ body,
 .dueDateInput {
   border: var(--light-background);
   background-color: var(--very-light-background);
+  cursor: pointer;
   min-width: 6rem;
 }
 
 ::-webkit-calendar-picker-indicator {
   filter: invert(77%) sepia(19%) saturate(305%) hue-rotate(175deg) brightness(81%) contrast(89%);
+  cursor: pointer;
+}
+
+
+.nodeManager,
+.nodePriority {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  color: var(--light-grey);
 }

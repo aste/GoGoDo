@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "date-fns": "^2.29.3",
+    "flatted": "^3.2.7",
     "uuid": "^9.0.0",
     "watch": "^0.13.0"
   }

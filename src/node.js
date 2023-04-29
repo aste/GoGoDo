@@ -133,7 +133,6 @@ export function indentNode(node) {
     saveDataToLocalStorage()
 }
 
-
 // DOM Manipulation
 export function renderNode(node) {
 
@@ -149,6 +148,7 @@ export function renderNode(node) {
     triangleElement.classList.toggle('triangleDown', node.childrenShown);
     triangleElement.style.setProperty('grid-column-start', `${node.indentationLevel}`)
     triangleElement.style.setProperty('grid-column-end', `${node.indentationLevel + 1}`)
+    triangleElement.addEventListener('click', function (event) { collapseExpandArrow(event) })
     nodeElement.appendChild(triangleElement);
 
     const nodeContainerElement = document.createElement('div');
@@ -198,7 +198,7 @@ export function renderNode(node) {
     dueDateInput.type = 'date';
     dueDateInput.classList.add('dueDateInput');
 
-    if (typeof node.dueDate === 'string') { node.dueDate = parseISO(node.dueDate);}
+    if (typeof node.dueDate === 'string') { node.dueDate = parseISO(node.dueDate); }
     dueDateInput.value = dateFns.format(node.dueDate, 'yyyy-MM-dd');
     dueDateInput.title = `Due ${dateFns.format(node.dueDate, 'MMMM do yyyy')}`;
     dueDateInput.textContent = dateFns.format(node.dueDate, 'do MMM');
@@ -285,21 +285,61 @@ export function collapseExpandDomNode(event) {
         renderTree(rootObj);
         moveFocusTo(currentUuid)
     }
+}
 
+export function collapseExpandArrow(event) {
+    const triangle = event.target;
+    const currentDomNode = triangle.closest('.node');
+    const currentUuid = currentDomNode.getAttribute('id')
+    const objNode = findNodeByUuid(currentUuid)
+
+    event.preventDefault
+    objNode.childrenShown = !objNode.childrenShown;
+    if (!objNode.childrenShown) {
+        hide(objNode)
+    } else {
+        show(objNode)
+    }
+    clearDomTree();
+    renderTree(rootObj);
 }
 
 export function deleteDomNode(event) {
     const isMacOS = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
     const inputField = event.target;
-    const currentTriangle = inputField.closest('.triangle');
     const currentDomNode = inputField.closest('.node');
     const currentUuid = currentDomNode.getAttribute('id')
     const objNode = findNodeByUuid(currentUuid)
+
+    const previousDomNode = () => {
+        let previousElementSibling = currentDomNode.previousElementSibling
+        while (previousElementSibling && previousElementSibling.classList.contains('hidden')) {
+            previousElementSibling = previousElementSibling.previousElementSibling;
+        }
+        return previousElementSibling
+    }
+
+    const nextDomNode = () => {
+        let nextElementSibling = currentDomNode.nextElementSibling
+        while (nextElementSibling && nextElementSibling.classList.contains('hidden')) {
+            nextElementSibling = nextElementSibling.nextElementSibling;
+        }
+        return nextElementSibling
+    }
+
+    const prevNode = previousDomNode();
+    const nextNode = nextDomNode();
+    const prevUuid = prevNode ? prevNode.getAttribute('id') : false;
+    const nextUuid = nextNode ? nextNode.getAttribute('id') : false;
+
     if (event.key === "Backspace" && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey))) {
         event.preventDefault()
         deleteNode(objNode)
         clearDomTree();
         renderTree(rootObj);
+        if (prevUuid) {
+            moveFocusTo(prevUuid)
+        } else if (nextUuid) { moveFocusTo(nextUuid) }
     }
     saveDataToLocalStorage()
 }
@@ -316,7 +356,13 @@ export function toggleCompleteDomNode(event) {
         toggleComplete(objNode)
         clearDomTree();
         renderTree(rootObj);
-        moveFocusTo(currentUuid)
+        if (currentUuid.nextElementSibling) {
+            console.log("next")
+            moveFocusTo(currentUuid.nextElementSibling)
+        } else {
+            console.log("prev")
+            moveFocusTo(currentUuid.previousElementSibling)
+        }
     }
 }
 
@@ -486,4 +532,3 @@ export function renderTree(parentObject) {
         }
     })
 }
-

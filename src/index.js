@@ -1,491 +1,34 @@
 // Dependencies
-import { v4 as uuid } from 'uuid'
+import { parse, stringify } from 'flatted';
 import "./styles/styles.css";
-const dateFns = require('date-fns')
-
-
-// Assets
-import profileImage from './assets/anonProfileIconGrey.svg'
-import settingsIcon from './assets/settingsGrey.svg'
-import gogodoLogo from './assets/gogodoLogoCyan.svg'
-import tabIcon from './assets/checkMark.svg'
-import addBtn from './assets/addBtnCyan.svg'
-import infoBtn from './assets/info.svg'
-
-
-// Node Objects
-const rootObj = {
-    title: 'rootObj',
-    uuid: uuid(),
-    parent: undefined,
-    children: [],
-}
-
-function createNodeObject(title) {
-    return {
-        title: title,
-        uuid: uuid(),
-        dueDate: dateFns.addDays(dateFns.addHours(dateFns.startOfDay(new Date()), 18), 7),
-        priorityLevel: "N",
-        projectManager: "You are the manager",
-        collapseNode: false,
-        complete: false,
-        hidden: false,
-        childrenShown: true,
-        children: [],
-        parent: undefined,
-        indentationLevel: 0,
-    }
-}
-
-function distanceToRoot(nodeObject) {
-    let distance = 0;
-    if (nodeObject.parent) { distance += 1 + distanceToRoot(nodeObject.parent) }
-    return distance
-}
-
-function insertNodeObject(node, parent = rootObj, index = parent.children.length) {
-    if (node.parent) { node.parent.children.splice(findNodeIndex(node), 1) }
-    node.parent = parent
-    node.indentationLevel = distanceToRoot(node)
-    parent.children.splice(index, 0, node)
-}
-
-const findNodeIndex = (node) => node.parent.children.indexOf(node)
-
-function updateNodeAndChildrenIndentLvl(parentNode) {
-    for (const child of parentNode.children) {
-        child.indentationLevel = distanceToRoot(child)
-        if (child.children) {
-            updateNodeAndChildrenIndentLvl(child)
-        }
-    }
-}
-
-function toggleComplete(node, parentComplete = null) {
-    if (parentComplete === null) {
-        node.complete = !node.complete;
-    } else {
-        node.complete = parentComplete;
-    }
-
-    node.children.forEach(child => toggleComplete(child, node.complete));
-}
-
-function hide(node, applyToParent = false) {
-    if (applyToParent) {
-        node.hidden = true
-    } else {
-        node.childrenShown = false
-    }
-    node.children.forEach(child => hide(child, true));
-}
-
-function show(node, applyToParent = false) {
-    if (applyToParent) {
-        node.hidden = false
-    } else {
-        node.childrenShown = true
-    }
-    node.children.forEach(child => show(child, true));
-}
-
-
-
-function deleteNode(node) {
-    node.parent.children.splice(findNodeIndex(node), 1)
-}
-
-function unIndentNode(node) {
-    if (node.parent !== undefined && node.parent.parent !== undefined) {
-        const newParent = node.parent.parent;
-        const parentIndexInGrandparent = findNodeIndex(node.parent);
-        insertNodeObject(node, newParent, parentIndexInGrandparent + 1);
-        updateNodeAndChildrenIndentLvl(node);
-    }
-}
-
-function indentNode(node) {
-    if (findNodeIndex(node) != 0) {
-        const prevSibling = node.parent.children[findNodeIndex(node) - 1]
-        insertNodeObject(node, prevSibling)
-        updateNodeAndChildrenIndentLvl(node)
-    }
-}
-
+import { setupNavBar } from "./navbar.js";
+import {
+    profileImage,
+    settingsIcon,
+    gogodoLogo,
+    tabIcon,
+    addBtn,
+    infoBtn,
+} from './assets.js';
+import {
+    rootObj,
+    mainNode,
+    mainNodeWrapper,
+    newTaskBtn,
+    createNodeObject,
+    insertNodeObject,
+    renderNode,
+    moveFocusTo,
+    renderTree,
+    saveDataToLocalStorage,
+    loadDataFromLocalStorage,
+    updateRootObject,
+} from "./node.js";
 
 // DOM References
-const mainNodeWrapper = document.getElementById("mainNodeWrapper");
-const newTaskBtn = document.getElementById('newTaskBtn');
-
-
-// DOM Elements
-const collapsedClass = "navCollapsed";
-const nav = document.querySelector(".nav")
-const navBorder = nav.querySelector(".navBorder")
-
-navBorder.addEventListener('click', () => {
-    nav.classList.toggle(collapsedClass);
-    if (navBorder.innerHTML === '→') {
-        navBorder.innerHTML = '←'
-    } else { navBorder.innerHTML = '→' }
-})
-
-const mainNode = document.createElement('div')
 mainNode.id = rootObj.uuid
 mainNode.classList.add('mainNode')
 mainNodeWrapper.insertBefore(mainNode, newTaskBtn)
-
-
-// DOM Manipulation
-function renderNode(node) {
-
-    const nodeElement = document.createElement('div');
-    nodeElement.id = node.uuid;
-    nodeElement.classList.add('node');
-    nodeElement.classList.toggle('completed', node.complete);
-    nodeElement.classList.toggle('hidden', node.hidden);
-    nodeElement.dataset.indentlvl = node.indentationLevel
-
-    const triangleElement = document.createElement('div');
-    triangleElement.classList.add('triangle');
-    triangleElement.classList.toggle('triangleDown', node.childrenShown);
-    triangleElement.style.setProperty('grid-column-start', `${node.indentationLevel}`)
-    triangleElement.style.setProperty('grid-column-end', `${node.indentationLevel + 1}`)
-    nodeElement.appendChild(triangleElement);
-
-    const nodeContainerElement = document.createElement('div');
-    nodeContainerElement.classList.add('nodeContainer');
-    nodeContainerElement.style.setProperty('grid-column-start', `${node.indentationLevel + 1}`)
-    nodeElement.appendChild(nodeContainerElement);
-
-    const formElement = document.createElement('form');
-    formElement.classList.add('nodeForm');
-    formElement.dataset.uuid = node.uuid
-    formElement.addEventListener('keydown', function (event) { moveFocus(event) })
-    formElement.addEventListener('keydown', function (event) { indentDomNode(event) })
-    formElement.addEventListener('keydown', function (event) { moveDomNode(event) })
-    formElement.addEventListener('keydown', function (event) { toggleCompleteDomNode(event) })
-    formElement.addEventListener('keydown', function (event) { deleteDomNode(event) })
-    formElement.addEventListener('keydown', function (event) { collapseExpandDomNode(event) })
-    formElement.addEventListener('submit', function (event) {
-        event.preventDefault();
-        // Insert New Obj Node in Data Tree
-        const newNode = createNodeObject('')
-        insertNodeObject(newNode, node.parent, findNodeIndex(node) + 1)
-
-        // Update Dom
-        const newDomNode = renderNode(newNode)
-        const currentDomNode = document.getElementById(formElement.dataset.uuid)
-        appendDomNodeBeforeNextSibling(currentDomNode, newDomNode)
-        moveFocusTo(newNode.uuid)
-    })
-
-    nodeContainerElement.appendChild(formElement);
-
-    const inputElement = document.createElement('input');
-    inputElement.type = 'text';
-    inputElement.classList.add(`title`);
-    inputElement.placeholder = 'Add title..';
-    inputElement.value = node.title;
-    inputElement.addEventListener('input', (event) => {
-        node.title = event.target.value
-    })
-    formElement.appendChild(inputElement);
-
-    const nodeMenuElement = document.createElement('div');
-    nodeMenuElement.classList.add('nodeMenu');
-    nodeContainerElement.appendChild(nodeMenuElement);
-
-    const dueDateInput = document.createElement('input');
-    dueDateInput.type = 'date';
-    dueDateInput.classList.add('dueDateInput');
-    dueDateInput.value = dateFns.format(node.dueDate, 'yyyy-MM-dd');
-    dueDateInput.title = `Due ${dateFns.format(node.dueDate, 'MMMM do yyyy')}`;
-    dueDateInput.textContent = dateFns.format(node.dueDate, 'do MMM');
-
-    dueDateInput.addEventListener('change', (event) => {
-        let selectedDate = new Date(event.target.value);
-        node.dueDate = selectedDate;
-    });
-
-    nodeMenuElement.appendChild(dueDateInput);
-
-
-    const prioritySelect = document.createElement('select');
-    prioritySelect.classList.add('nodeBtn', 'nodePriority');
-
-    const priorities = [
-        { value: 'No', label: 'No Priority' },
-        { value: 'Low', label: 'Low Priority' },
-        { value: 'Medium', label: 'Medium Priority' },
-        { value: 'High', label: 'High Priority' },
-    ];
-
-    priorities.forEach((priority) => {
-        const priorityOption = document.createElement('option');
-        priorityOption.value = priority.value;
-        priorityOption.textContent = priority.label;
-        priorityOption.selected = priority.value === node.priorityLevel;
-        prioritySelect.appendChild(priorityOption);
-    });
-
-    prioritySelect.addEventListener('change', (event) => {
-        node.priorityLevel = event.target.value;
-    });
-
-    nodeMenuElement.appendChild(prioritySelect);
-
-
-    const managerSelect = document.createElement('select');
-    managerSelect.classList.add('nodeBtn', 'nodeManager');
-    
-    const managers = [
-        { value: 'You', label: 'You are the project manager' },
-        { value: 'Michael', label: 'Ada Lovelace is the project manager' },
-        { value: 'Pam', label: 'Guido van Rossum is the project manager' },
-        { value: 'Dwight', label: 'Linus Torvalds is the project manager' },
-    ];
-    
-    managers.forEach((manager) => {
-        const managerOption = document.createElement('option');
-        managerOption.value = manager.value;
-        managerOption.textContent = manager.label;
-        managerOption.selected = manager.value === node.manager;
-        managerSelect.appendChild(managerOption);
-    });
-    
-    managerSelect.addEventListener('change', (event) => {
-        node.manager = event.target.value;
-    });
-    
-    nodeMenuElement.appendChild(managerSelect);
-
-    return nodeElement;
-}
-
-function collapseExpandDomNode(event) {
-    const isMacOS = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-    const inputField = event.target;
-    const currentDomNode = inputField.closest('.node');
-    const currentUuid = currentDomNode.getAttribute('id')
-    const objNode = findNodeByUuid(currentUuid)
-
-    if (event.key === "ArrowUp" && event.shiftKey && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey))) {
-        event.preventDefault
-        hide(objNode)
-        clearDomTree();
-        renderTree(rootObj);
-        moveFocusTo(currentUuid)
-    }
-
-    if (event.key === "ArrowDown" && event.shiftKey && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey))) {
-        event.preventDefault
-        show(objNode)
-        clearDomTree();
-        renderTree(rootObj);
-        moveFocusTo(currentUuid)
-    }
-
-}
-
-function deleteDomNode(event) {
-    const isMacOS = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-    const inputField = event.target;
-    const currentTriangle = inputField.closest('.triangle');
-    const currentDomNode = inputField.closest('.node');
-    const currentUuid = currentDomNode.getAttribute('id')
-    const objNode = findNodeByUuid(currentUuid)
-    if (event.key === "Backspace" && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey))) {
-        event.preventDefault()
-        deleteNode(objNode)
-        clearDomTree();
-        renderTree(rootObj);
-    }
-}
-
-function toggleCompleteDomNode(event) {
-    const isMacOS = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-    const inputField = event.target;
-    const currentDomNode = inputField.closest('.node');
-    const currentUuid = currentDomNode.getAttribute('id')
-    const objNode = findNodeByUuid(currentUuid)
-
-    if (event.key === "Enter" && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey))) {
-        event.preventDefault
-        toggleComplete(objNode)
-        clearDomTree();
-        renderTree(rootObj);
-        moveFocusTo(currentUuid)
-    }
-}
-
-function moveDomNode(event) {
-    const isMacOS = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-    const inputField = event.target
-    const currentDomNodeID = inputField.closest('.node').id;
-    const currentNode = findNodeByUuid(currentDomNodeID)
-    const currentNodeIndex = findNodeIndex(currentNode)
-    const siblingLength = currentNode.parent.children.length
-
-    if (event.key === "ArrowDown" && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey)) && !event.shiftKey) {
-        if (siblingLength > currentNodeIndex + 1) {
-            insertNodeObject(currentNode, currentNode.parent, currentNodeIndex + 1)
-            clearDomTree();
-            renderTree(rootObj);
-            moveFocusTo(currentDomNodeID)
-        }
-
-    }
-    if (event.key === "ArrowUp" && ((isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey)) && !event.shiftKey) {
-        if (currentNodeIndex > 0) {
-            insertNodeObject(currentNode, currentNode.parent, currentNodeIndex - 1)
-            clearDomTree();
-            renderTree(rootObj);
-            moveFocusTo(currentDomNodeID)
-        }
-
-    }
-
-}
-
-function moveFocusTo(uuid) {
-    const formElement = document.querySelector(`form[data-uuid="${uuid}"]`)
-    const inputField = formElement.querySelector('input.title')
-    inputField.focus()
-}
-
-function moveFocus(event) {
-    const inputField = event.target;
-    const currentDomNode = inputField.closest('.node');
-
-    const previousDomNode = () => {
-        let previousElementSibling = currentDomNode.previousElementSibling
-        while (previousElementSibling && previousElementSibling.classList.contains('hidden')) {
-            previousElementSibling = previousElementSibling.previousElementSibling;
-        }
-        return previousElementSibling
-    }
-
-    const nextDomNode = () => {
-        let nextElementSibling = currentDomNode.nextElementSibling
-        while (nextElementSibling && nextElementSibling.classList.contains('hidden')) {
-            nextElementSibling = nextElementSibling.nextElementSibling;
-        }
-        return nextElementSibling
-    }
-
-    if (event.key === "ArrowDown" && !(event.metaKey || event.ctrlKey)) { // Down arrow key
-        event.preventDefault();
-        if (nextDomNode()) {
-            const nextInputField = nextDomNode().querySelector('.title');
-            nextInputField.focus();
-        }
-    }
-
-    if (event.key === "ArrowUp" && !(event.metaKey || event.ctrlKey)) { // Up arrow key
-        event.preventDefault();
-        if (previousDomNode()) {
-            const previousInputField = previousDomNode().querySelector('.title');
-            previousInputField.focus()
-        }
-    }
-}
-
-function indentDomNode(event) {
-    const inputField = event.target;
-    const currentDomNode = inputField.closest('.node');
-    const currentIndentLevel = currentDomNode.getAttribute('data-indentlvl')
-    const currentUuid = currentDomNode.getAttribute('id')
-    const objNode = findNodeByUuid(currentUuid)
-
-    if (event.key === "Tab" && !event.shiftKey && currentIndentLevel > 0) { // Down arrow key
-        event.preventDefault();
-        indentNode(objNode);
-        clearDomTree();
-        renderTree(rootObj);
-        moveFocusTo(currentUuid)
-    }
-
-    if (event.key === "Tab" && event.shiftKey && currentIndentLevel > 1) { // Down arrow key
-        event.preventDefault();
-        unIndentNode(objNode)
-        clearDomTree()
-        renderTree(rootObj);
-        moveFocusTo(currentUuid)
-    }
-}
-
-function clearDomTree() {
-    while (mainNode.firstChild) {
-        mainNode.removeChild(mainNode.firstChild)
-    }
-}
-
-function findNodeByUuid(uuid, node = rootObj) {
-    if (node.uuid === uuid) return node;
-
-    for (const child of node.children) {
-        const foundNode = findNodeByUuid(uuid, child);
-        if (foundNode) {
-            return foundNode;
-        }
-    }
-
-    return null;
-}
-
-function findLastDescendant(domNode) {
-    let lastDescendant = domNode;
-    const currentIndentLevel = parseInt(domNode.getAttribute('data-indentlvl'));
-
-    for (let sibling = domNode.nextElementSibling; sibling; sibling = sibling.nextElementSibling) {
-        const siblingIndentLevel = parseInt(sibling.getAttribute('data-indentlvl'));
-
-        if (siblingIndentLevel <= currentIndentLevel) {
-            break;
-        }
-        lastDescendant = sibling;
-    }
-
-    return lastDescendant;
-}
-
-function appendDomNodeBeforeNextSibling(currentDomNode, newDomNode) {
-    const currentIndentLevel = currentDomNode.getAttribute('data-indentlvl')
-    let nextSiblingFound = false
-
-    for (let sibling = currentDomNode.nextElementSibling; sibling; sibling = sibling.nextElementSibling) {
-        if (sibling.getAttribute('data-indentlvl') === currentIndentLevel) {
-            currentDomNode.parentElement.insertBefore(newDomNode, sibling)
-            nextSiblingFound = true;
-            break;
-        }
-    }
-
-    if (!nextSiblingFound) {
-        const lastDescendant = findLastDescendant(currentDomNode)
-        lastDescendant.after(newDomNode)
-    }
-}
-
-function renderTree(parentObject) {
-    let element = document.getElementById(parentObject.uuid)
-
-    parentObject.children.forEach(childObject => {
-        const childElement = renderNode(childObject);
-
-        if (element.className === 'mainNode') {
-            element.appendChild(childElement);
-        } else {
-            element.parentElement.appendChild(childElement);
-        }
-
-        if (childObject.children) {
-            renderTree(childObject);
-        }
-    })
-}
 
 newTaskBtn.addEventListener('click', (event) => {
     const newNode = createNodeObject('')
@@ -498,28 +41,38 @@ newTaskBtn.addEventListener('click', (event) => {
     console.log(rootObj)
 })
 
+setupNavBar()
 
+// localStorage.clear()
 
+const storedRootObj = loadDataFromLocalStorage();
 
 // Initial Test nodes
-const firstObj = createNodeObject('A life well lived')
-insertNodeObject(firstObj)
+if (storedRootObj !== null) {
+// if (false) {
+    updateRootObject(storedRootObj)
+} else {
+    const firstObj = createNodeObject('A life well lived')
+    insertNodeObject(firstObj)
 
-const secondObj = createNodeObject('Help others live a better life')
-insertNodeObject(secondObj, firstObj)
+    const secondObj = createNodeObject('Help others live a better life')
+    insertNodeObject(secondObj, firstObj)
 
-const thirdObj = createNodeObject('Leave the world better than you found it')
-insertNodeObject(thirdObj, secondObj)
+    const thirdObj = createNodeObject('Leave the world better than you found it')
+    insertNodeObject(thirdObj, secondObj)
 
-const fourthObj = createNodeObject('The next step if for you to figure out')
-insertNodeObject(fourthObj, thirdObj)
+    const fourthObj = createNodeObject('The next step if for you to figure out')
+    insertNodeObject(fourthObj, thirdObj)
 
-const fifthObj = createNodeObject('Go ahead and make your plan')
-insertNodeObject(fifthObj, thirdObj)
+    const fifthObj = createNodeObject('Go ahead and make your plan')
+    insertNodeObject(fifthObj, thirdObj)
 
-const sixthObj = createNodeObject('')
-insertNodeObject(sixthObj)
+    const sixthObj = createNodeObject('')
+    insertNodeObject(sixthObj)
 
+    saveDataToLocalStorage()
+    console.log(rootObj)
+}
 
-// Render full tree
 renderTree(rootObj);
+

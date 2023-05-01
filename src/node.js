@@ -111,7 +111,9 @@ export function show(node, applyToParent = false, shouldSave = true) {
 }
 
 export function deleteNode(node) {
-    node.parent.children.splice(findNodeIndex(node), 1)
+    const parent = node.parent;
+    const nodeIndex = findNodeIndex(node);
+    parent.children.splice(nodeIndex, 1);
 }
 
 export function unIndentNode(node) {

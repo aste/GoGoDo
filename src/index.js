@@ -43,7 +43,7 @@ newTaskBtn.addEventListener('click', (event) => {
 
 setupNavBar()
 
-// localStorage.clear()
+localStorage.clear()
 
 const storedRootObj = loadDataFromLocalStorage();
 
@@ -71,7 +71,6 @@ if (storedRootObj !== null) {
     insertNodeObject(sixthObj)
 
     saveDataToLocalStorage()
-    console.log(rootObj)
 }
 
 renderTree(rootObj);

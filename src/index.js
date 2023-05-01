@@ -43,7 +43,7 @@ newTaskBtn.addEventListener('click', (event) => {
 
 setupNavBar()
 
-localStorage.clear()
+// localStorage.clear()
 
 const storedRootObj = loadDataFromLocalStorage();
 

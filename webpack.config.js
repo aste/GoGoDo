@@ -1,6 +1,5 @@
 const path = require('node:path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
     mode: 'development',
@@ -20,10 +19,7 @@ module.exports = {
             {
                 test: /\.(png|svg|jpg|jpeg|gif)$/i,
                 type: 'asset/resource',
-                generator: {
-                  filename: '[name][ext]',
-                },
-              },
+            },
         ]
     },
     plugins: [
@@ -32,10 +28,6 @@ module.exports = {
             filename: 'index.html',
             template: 'src/template.html',
             inject: false,
-        }),
-        new MiniCssExtractPlugin({ // Add this block
-            filename: '[name].css',
-            chunkFilename: '[id].css',
         }),
     ],
 

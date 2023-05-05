@@ -6,25 +6,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GoGoDo</title>
     <script src="./index.js" defer></script>
-    <link rel="icon" href="./checkMark.svg" />
+    <link rel="icon" href="${require('./checkMark.svg').default}" />
   </head>
   <body>
     <div class="bar" id="menubar">
       <div class="profile" id="profileMenu">
         <h3 class="profile-text profileItems" id="profileText">Account Name</h3>
-        <img class="profileItems" src="./anonProfileIconGrey.svg" id="profileImage" />
-        <img class="profileItems" src="./settingsGrey.svg" id="settingsIcon" />
+        <img
+          class="profileItems"
+          src="${require('./anonProfileIconGrey.svg').default}"
+          id="profileImage"
+        />
+        <img
+          class="profileItems"
+          src="${require('./settingsGrey.svg').default}"
+          id="settingsIcon"
+        />
       </div>
 
       <div class="bar" id="logoBar">
-        <img src="./gogodoLogoCyan.svg" id="gogodoLogo" />
+        <img src="${require('./gogodoLogoCyan.svg').default}" id="gogodoLogo" />
         <h3 class="logoSubheader">To-Do or not To-Do? That is the question</h3>
       </div>
     </div>
     <div id="mapListArea">
       <div id="mainNodeWrapper">
         <button id="newTaskBtn" class="nodeBtn newTask" title="Add a new task">
-          <img src="./addBtnCyan.svg" alt="Add a New Task" />
+          <img src="${require('./addBtnCyan.svg').default}" alt="Add a New Task" />
         </button>
       </div>
       <div class="nav">
